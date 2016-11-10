@@ -1,0 +1,19 @@
+<launch>
+  <include file="$(find third_robot_driver)/launch/third_robot.launch"/>
+  <include file="$(find third_robot_bringup)/launch/sensor_bringup.launch"/>
+
+  <param name="robot_description"
+	 command="$(find xacro)/xacro.py '$(find third_robot_description)/urdf/third_robot.xacro'" />  
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+  </node>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+  </node>
+
+  
+  <include file="$(find third_robot_merge_laser)/launch/third_robot_laserscan_merger.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find third_robot_2dnav)/config/autorun3.rviz" required="true" />
+  
+
+</launch>

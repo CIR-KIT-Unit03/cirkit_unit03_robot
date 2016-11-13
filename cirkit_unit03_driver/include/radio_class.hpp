@@ -1,22 +1,22 @@
 #include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
 #include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Joy.h>
 
 #include <iostream>
-#include <stdexcept>
-#include <termios.h>
-#include <string>
-#include <vector>
-#include <stdint.h>
 #include <numeric>
+#include <stdexcept>
+#include <stdint.h>
+#include <string>
+#include <termios.h>
+#include <vector>
 
 // close()
 #include <unistd.h>
 
 // open()
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 // ioctl()
 #include <sys/ioctl.h>

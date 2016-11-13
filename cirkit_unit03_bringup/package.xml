@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>cirkit_unit03_bringup</name>
   <version>0.1.0</version>
   <description>The cirkit_unit03_bringup package</description>
@@ -9,10 +9,10 @@
   <url type="repository">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot/tree/master/cirkit_unit03_bringup</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>cirkit_unit03_driver</run_depend>
-  <run_depend>cirkit_unit03_description</run_depend>
-  <run_depend>cirkit_unit03_merge_laser</run_depend>
-  <run_depend>cirkit_unit03_desktop</run_depend>
+  <exec_depend>cirkit_unit03_driver</exec_depend>
+  <exec_depend>cirkit_unit03_description</exec_depend>
+  <exec_depend>cirkit_unit03_merge_laser</exec_depend>
+  <exec_depend>cirkit_unit03_desktop</exec_depend>
 
   <export>
   </export>

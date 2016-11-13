@@ -4,7 +4,6 @@ project(cirkit_unit03_driver)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   geometry_msgs
-  joy
   nav_msgs
   sensor_msgs
   std_msgs
@@ -12,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  CATKIN_DEPENDS roscpp geometry_msgs joy nav_msgs sensor_msgs std_msgs tf
+  CATKIN_DEPENDS roscpp geometry_msgs nav_msgs sensor_msgs std_msgs tf
 )
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")

@@ -1,7 +1,8 @@
-#include <tf/transform_broadcaster.h>
-#include <nav_msgs/Odometry.h>
 #include "radio_class.hpp"
 #include <boost/thread.hpp>
+
+#include <nav_msgs/Odometry.h>
+#include <tf/transform_broadcaster.h>
 
 boost::mutex access_mutex_;
 std::string imcs01_port;

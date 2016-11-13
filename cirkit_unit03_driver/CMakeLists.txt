@@ -2,16 +2,17 @@ cmake_minimum_required(VERSION 2.8.3)
 project(cirkit_unit03_driver)
 
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  nav_msgs
-  tf
   roscpp
-  rospy
+  geometry_msgs
+  joy
+  nav_msgs
+  sensor_msgs
   std_msgs
+  tf
 )
 
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp geometry_msgs joy nav_msgs sensor_msgs std_msgs tf
 )
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
@@ -27,7 +28,5 @@ add_executable(third_robot_driver_node
   src/ThirdRobotInterface/ThirdRobotInterface.cpp
 )
 add_dependencies(third_robot_driver_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(third_robot_driver_node
-  ${catkin_LIBRARIES}
-)
+target_link_libraries(third_robot_driver_node ${catkin_LIBRARIES})
 

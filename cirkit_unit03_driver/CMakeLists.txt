@@ -6,12 +6,11 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   sensor_msgs
-  std_msgs
   tf
 )
 
 catkin_package(
-  CATKIN_DEPENDS roscpp geometry_msgs nav_msgs sensor_msgs std_msgs tf
+  CATKIN_DEPENDS roscpp geometry_msgs nav_msgs sensor_msgs tf
 )
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")

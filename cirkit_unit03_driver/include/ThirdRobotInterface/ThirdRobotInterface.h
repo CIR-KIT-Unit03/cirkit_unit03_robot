@@ -1,20 +1,20 @@
 #ifndef THIRD_ROBOT_INTERFACE_H_
 #define THIRD_ROBOT_INTERFACE_H_
 
-#include <stdexcept>
-#include <termios.h>
-#include <string>
-#include <vector>
-#include <stdint.h>
 #include <numeric>
+#include <stdexcept>
+#include <stdint.h>
+#include <string>
+#include <termios.h>
+#include <vector>
 
 // close()
 #include <unistd.h>
 
 // open()
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 // ioctl()
 #include <sys/ioctl.h>

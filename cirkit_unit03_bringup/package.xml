@@ -7,7 +7,8 @@
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
   <maintainer email="o111027y@mail.kyutech.jp">Doi Yusuke</maintainer>
   <license>MIT</license>
-  <url type="repository">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot/tree/master/cirkit_unit03_bringup</url>
+  <url type="repository">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot.git</url>
+  <url type="bugtracker">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>cirkit_unit03_driver</exec_depend>

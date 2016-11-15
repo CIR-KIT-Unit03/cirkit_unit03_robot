@@ -9,6 +9,7 @@
   <license>BSD</license>
   <url type="repository">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot.git</url>
   <url type="bugtracker">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot/issues</url>
+  <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>cirkit_unit03_driver</exec_depend>

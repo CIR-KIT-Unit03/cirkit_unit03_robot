@@ -107,10 +107,8 @@ public:
   double odometry_y_;
   //! robot odometry yaw[rad]
   double odometry_yaw_;
-	
   //! Front steer angle[deg].
   double steer_angle;
-
   //! Robot running status
   int stasis_;
 
@@ -125,7 +123,6 @@ protected:
   int parseEncoderPackets();
   int parseFrontEncoderCounts();
   int parseRearEncoderCounts();
-
 
 
   //! For access to iMCs01

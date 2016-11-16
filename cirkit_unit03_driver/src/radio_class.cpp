@@ -6,11 +6,11 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-#include <unistd.h> // close()
 #include <fcntl.h> // for open()
+#include <sys/ioctl.h> // for ioctl()
 #include <sys/stat.h> // for open()
 #include <sys/types.h> // for open()
-#include <sys/ioctl.h> // for ioctl()
+#include <unistd.h> // close()
 
 using namespace std; // FIXME: don't erosion grobal area
 

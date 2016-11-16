@@ -47,13 +47,16 @@ enum {
 #define SENDSIZE 7
 
 #ifndef MIN
-#define MIN(a,b) ((a < b) ? (a) : (b))
+template<typedef T>
+T MIN(const T& a, const T& b) { return a < b ? a : b };
 #endif
 #ifndef MAX
-#define MAX(a,b) ((a > b) ? (a) : (b))
+template<typedef T>
+T MAX(const T& a, const T& b) { return a > b ? a : b };
 #endif
 #ifndef NORMALIZE
-#define NORMALIZE(z) atan2(sin(z), cos(z))
+template<typedef T>
+double NORMALIZE(const T& z) { return atan2(sin(z), cos(z)) };
 #endif
 
 class radio_class{

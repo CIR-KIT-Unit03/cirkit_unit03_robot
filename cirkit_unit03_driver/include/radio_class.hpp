@@ -63,7 +63,7 @@ class radio_class{
 
 public:
   //! Constructor
-  radio_class(std::string new_serial_port_imcs01, int new_baudrate_imcs01,std::string new_serial_port_arduino, int new_baudrate_arduino);
+  radio_class(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01, const std::string& new_serial_port_arduino, int new_baudrate_arduino);
 
   //! Destructor
   ~radio_class();

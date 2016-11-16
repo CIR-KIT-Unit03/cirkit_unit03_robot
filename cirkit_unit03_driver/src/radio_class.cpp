@@ -15,23 +15,19 @@
 using namespace std; // FIXME: don't erosion grobal area
 
 radio_class::radio_class(    
-			 std::string new_serial_port_imcs01, 
-			 int         new_baudrate_imcs01,
-			 std::string new_serial_port_arduino, 
-			 int         new_baudrate_arduino)
+    const std::string& new_serial_port_imcs01,
+    int                new_baudrate_imcs01,
+    const std::string& new_serial_port_arduino,
+    int                new_baudrate_arduino)
+: imcs01_port_name(new_serial_port_imcs01),
+  fd_imcs01(-1),
+  baudrate_imcs01(new_baudrate_imcs01),
+  delta_rear_encoder_counts(-1),
+  steer_angle(0.0),
+  last_rear_encoder_counts(0),
+  last_rear_encoder_time(0),
+  stasis_(ROBOT_STASIS_FORWARD_STOP) //forward mode but stopping
 {
-  imcs01_port_name = new_serial_port_imcs01;
-  fd_imcs01 = -1;
-  baudrate_imcs01 = new_baudrate_imcs01;
-
-  delta_rear_encoder_counts = -1;
-  steer_angle = 0.0;
-
-  last_rear_encoder_counts = 0;
-  last_rear_encoder_time = 0;
-
-  stasis_ = ROBOT_STASIS_FORWARD_STOP;//forward mode but stopping
-
   resetOdometry();
 }
 

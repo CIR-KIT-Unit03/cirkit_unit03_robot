@@ -1,6 +1,19 @@
 #include "third_robot_driver.hpp"
 
-using namespace std;
+// inclusive dependency
+#include "ThirdRobotInterface/ThirdRobotInterface.h"
+
+// dependency to ROS
+#include <nav_msgs/Odometry.h> // odom
+
+// dependency to Boost
+#include <boost/thread.hpp>
+
+// dependency to std
+#include <iostream>
+
+
+using namespace std; // FIXME: this software is library to third_robot_driver_node, don't erosion grobal area.
 
 cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
   : nh_(nh), rate_(100)

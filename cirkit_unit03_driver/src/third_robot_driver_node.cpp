@@ -2,19 +2,7 @@
  * This is CIR-KIT 3rd robot control driver.
  * Author : Arita Yuta(Kyutech)
  ******************************************************/
-
-#include <ros/ros.h>
-#include <geometry_msgs/Twist.h>		// cmd_vel
-#include <nav_msgs/Odometry.h>			// odom
-#include <tf/transform_broadcaster.h>
-
-#include <iostream>
-#include <string>
-
-#include <boost/thread.hpp>
-
 #include "third_robot_driver.hpp"
-
 
 int main(int argc, char** argv)
 {

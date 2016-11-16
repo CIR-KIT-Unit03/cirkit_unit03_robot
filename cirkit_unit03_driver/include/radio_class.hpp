@@ -1,25 +1,9 @@
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
-#include <sensor_msgs/Joy.h>
 
-#include <iostream>
 #include <numeric>
-#include <stdexcept>
-#include <stdint.h>
 #include <string>
+#include <stdint.h> // What this?
 #include <termios.h>
-#include <vector>
-
-// close()
-#include <unistd.h>
-
-// open()
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-
-// ioctl()
-#include <sys/ioctl.h>
 
 // iMCs01
 #include "ThirdRobotInterface/imcs01_driver/driver/urbtc.h"

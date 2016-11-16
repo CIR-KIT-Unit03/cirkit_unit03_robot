@@ -1,6 +1,18 @@
 #include "radio_class.hpp"
 
-using namespace std;
+#include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Joy.h>
+
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#include <unistd.h> // close()
+#include <fcntl.h> // for open()
+#include <sys/stat.h> // for open()
+#include <sys/types.h> // for open()
+#include <sys/ioctl.h> // for ioctl()
+
+using namespace std; // FIXME: don't erosion grobal area
 
 radio_class::radio_class(    
 			 std::string new_serial_port_imcs01, 

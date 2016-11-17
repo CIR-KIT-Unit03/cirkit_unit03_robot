@@ -1,31 +1,22 @@
 #ifndef THIRD_ROBOT_INTERFACE_H_
 #define THIRD_ROBOT_INTERFACE_H_
 
-#include <numeric>
-#include <stdexcept>
-#include <stdint.h>
-#include <string>
-#include <termios.h>
-#include <vector>
-
-// close()
-#include <unistd.h>
-
-// open()
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-
-// ioctl()
-#include <sys/ioctl.h>
+// For ROS
+#include "ros/ros.h"
+#include "geometry_msgs/Twist.h"		// cmd_vel
 
 // iMCs01
 #include "imcs01_driver/driver/urbtc.h"
 #include "imcs01_driver/driver/urobotc.h"
 
+// For std
+#include <numeric> // what for?
+#include <string>
 
-#include "ros/ros.h"
-#include <geometry_msgs/Twist.h>		// cmd_ve
+// For old c
+#include <stdint.h> // what for? and OLD
+#include <termios.h>
+
 
 #define FRONT	0
 #define REAR	1
@@ -42,7 +33,7 @@
 #define BACK_STOP_MODE			3
 #define STOP_MODE				4
 
-//! Robot max encoder counts  
+//! Robot max encoder counts
 #define ROBOT_MAX_ENCODER_COUNTS 65535
 
 //! Length of between front wheel and rear wheel [m]
@@ -159,7 +150,7 @@ namespace cirkit
     termios oldtio_imcs01;
     termios newtio_imcs01;
 
-    //! Delta rear encoder counts. 
+    //! Delta rear encoder counts.
 	//! 0 is right, 1 is left.
     int delta_rear_encoder_counts[2] = {0, 0};
 	

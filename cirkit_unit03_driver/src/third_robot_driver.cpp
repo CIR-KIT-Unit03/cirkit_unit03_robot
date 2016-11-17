@@ -46,21 +46,9 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
   thirdrobot_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 }
 
-void cirkit::ThirdRobotDriver::init()
+cirkit::ThirdRobotDriver::~ThirdRobotDriver()
 {
-  if(thirdrobot_->openSerialPort() == 0)
-	{
-	  ROS_INFO("Connected to Third Robot.");
-	  thirdrobot_->driveDirect(0, 0);
-	}
-  else
-	{
-	  ROS_FATAL("Could not connect to Third Robot.");
-	  ROS_BREAK();
-	}
-
-  thirdrobot_->resetOdometry();
-  thirdrobot_->setOdometry(0, 0, 0);
+  thirdrobot_->closeSerialPort();
 }
 
 void cirkit::ThirdRobotDriver::run()
@@ -128,11 +116,6 @@ void cirkit::ThirdRobotDriver::run()
 	}
 }
 
-cirkit::ThirdRobotDriver::~ThirdRobotDriver()
-{
-  thirdrobot_->closeSerialPort();
-}
-
 void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
 {
   static int steer = 0;
@@ -143,5 +126,21 @@ void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstP
 	steer_dir_ = thirdrobot_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
   }
   steer_pub_.publish(steer_dir_);
+}
 
+void cirkit::ThirdRobotDriver::init()
+{
+  if(thirdrobot_->openSerialPort() == 0)
+	{
+	  ROS_INFO("Connected to Third Robot.");
+	  thirdrobot_->driveDirect(0, 0);
+	}
+  else
+	{
+	  ROS_FATAL("Could not connect to Third Robot.");
+	  ROS_BREAK();
+	}
+
+  thirdrobot_->resetOdometry();
+  thirdrobot_->setOdometry(0, 0, 0);
 }

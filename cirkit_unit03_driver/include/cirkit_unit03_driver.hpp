@@ -13,11 +13,11 @@ namespace cirkit
 {
   class ThirdRobotInterface; // forward declaration
 
-  class ThirdRobotDriver
+  class CirkitUnit03Driver
   {
   public:
-    ThirdRobotDriver(ros::NodeHandle nh);
-    ~ThirdRobotDriver();
+    CirkitUnit03Driver(ros::NodeHandle nh);
+    ~CirkitUnit03Driver();
     void run();
   private:
     // Callback function

@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh;
   
-  cirkit::ThirdRobotDriver driver(nh);
+  cirkit::CirkitUnit03Driver driver(nh);
   driver.run();
 
   return 0;

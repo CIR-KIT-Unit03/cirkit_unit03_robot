@@ -16,12 +16,12 @@
 
 using namespace std; // FIXME: this software is library to third_robot_driver_node, don't erosion grobal area.
 
-cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
+cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
 : nh_(nh),
   rate_(100),
   odom_pub_(nh_.advertise<nav_msgs::Odometry>("/odom", 1)),
   steer_pub_(nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1)),
-  cmd_vel_sub_(nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::ThirdRobotDriver::cmdVelReceived, this, _1))),
+  cmd_vel_sub_(nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::CirkitUnit03Driver::cmdVelReceived, this, _1))),
   odom_broadcaster_(),
   imcs01_port_(), // over write by rosparam
   current_time_(),
@@ -59,12 +59,12 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
   thirdrobot_->setOdometry(0, 0, 0);
 }
 
-cirkit::ThirdRobotDriver::~ThirdRobotDriver() {
+cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
   thirdrobot_->closeSerialPort();
   delete thirdrobot_;
 }
 
-void cirkit::ThirdRobotDriver::run() {
+void cirkit::CirkitUnit03Driver::run() {
   double last_x, last_y, last_yaw;
   double vel_x, vel_y, vel_yaw;
   double dt;
@@ -122,7 +122,7 @@ void cirkit::ThirdRobotDriver::run() {
   }
 }
 
-void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
+void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
   static int steer = 0;
   {
     boost::mutex::scoped_lock(access_mutex_); // why use mutex?

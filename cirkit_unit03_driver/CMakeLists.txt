@@ -30,7 +30,7 @@ include_directories(
 )
 
 add_executable(cirkit_unit03_driver_node
-  src/third_robot_driver_node.cpp
+  src/cirkit_unit03_driver_node.cpp
   src/third_robot_driver.cpp
   src/ThirdRobotInterface/ThirdRobotInterface.cpp
 )

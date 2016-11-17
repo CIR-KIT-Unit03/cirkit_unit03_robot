@@ -20,18 +20,18 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
 {
   ros::NodeHandle n("~");
   n.param<std::string>("imcs01_port", imcs01_port_, "/dev/urbtc0");
-  double pulse_rate = 0;
-  double geer_rate = 0;
-  double wheel_diameter_right = 0;
-  double wheel_diameter_left = 0;
-  double tred_width = 0;
-  n.param("pulse_rate", pulse_rate, 40.0);
-  n.param("geer_rate", geer_rate, 33.0);
-  n.param("wheel_diameter_right", wheel_diameter_right, 0.275);
-  n.param("wheel_diameter_left", wheel_diameter_left, 0.275);
-  n.param("tred_width", tred_width, 0.595);
+  double pulse_rate = 40.0;
+  double geer_rate = 33.0;
+  double wheel_diameter_right = 0.275;
+  double wheel_diameter_left = 0.275;
+  double tred_width = 0.595;
+  n.param("pulse_rate", pulse_rate, pulse_rate);
+  n.param("geer_rate", geer_rate, geer_rate);
+  n.param("wheel_diameter_right", whel_diameter_right, whel_diameter_right);
+  n.param("wheel_diameter_left", wheel_diameter_left, wheel_diameter_left);
+  n.param("tred_width", tred_width, tred_width);
 
-  thirdrobot_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0);
+  thirdrobot_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
   thirdrobot_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);

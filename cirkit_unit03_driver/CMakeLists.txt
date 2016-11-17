@@ -31,7 +31,7 @@ include_directories(
 
 add_executable(cirkit_unit03_driver_node
   src/cirkit_unit03_driver_node.cpp
-  src/third_robot_driver.cpp
+  src/cirkit_unit03_driver.cpp
   src/ThirdRobotInterface/ThirdRobotInterface.cpp
 )
 add_dependencies(cirkit_unit03_driver_node ${catkin_EXPORTED_TARGETS})

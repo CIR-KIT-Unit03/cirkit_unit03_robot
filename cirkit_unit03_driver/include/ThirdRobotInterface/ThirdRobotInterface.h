@@ -17,21 +17,26 @@
 #include <stdint.h> // what for? and OLD
 #include <termios.h>
 
+enum {
+  FRONT,
+  REAR
+};
 
-#define FRONT	0
-#define REAR	1
+enum {
+  ROBOT_STASIS_FORWARD,
+  ROBOT_STASIS_FORWARD_STOP,
+  ROBOT_STASIS_BACK,
+  ROBOT_STASIS_BACK_STOP,
+  ROBOT_STASIS_OTHERWISE
+};
 
-#define ROBOT_STASIS_FORWARD			0
-#define ROBOT_STASIS_FORWARD_STOP		1
-#define ROBOT_STASIS_BACK				2
-#define ROBOT_STASIS_BACK_STOP			3
-#define ROBOT_STASIS_OTHERWISE			4
-
-#define FORWARD_MODE			0
-#define FORWARD_STOP_MODE		1
-#define BACK_MODE				2
-#define BACK_STOP_MODE			3
-#define STOP_MODE				4
+enum {
+  FORWARD_MODE,
+  FORWARD_STOP_MODE,
+  BACK_MODE,
+  BACK_STOP_MODE,
+  STOP_MODE
+};
 
 //! Robot max encoder counts
 #define ROBOT_MAX_ENCODER_COUNTS 65535

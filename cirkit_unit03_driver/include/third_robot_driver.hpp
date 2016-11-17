@@ -24,19 +24,19 @@ namespace cirkit
     void cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel);
     void init();
 
-    // third robot interface object
-    cirkit::ThirdRobotInterface *thirdrobot_;
     ros::NodeHandle nh_;
-    // Publisher
+    ros::Rate rate_;
+    // ROS topic trader
     ros::Publisher odom_pub_;
     ros::Publisher steer_pub_;
+    ros::Subscriber cmd_vel_sub_;
     // self member
     tf::TransformBroadcaster odom_broadcaster_;
-    ros::Subscriber cmd_vel_sub_;
-    ros::Rate rate_;
     std::string imcs01_port_;
     ros::Time current_time_, last_time_;
     boost::mutex access_mutex_;
     geometry_msgs::Twist steer_dir_;
+    // third robot interface object
+    cirkit::ThirdRobotInterface *thirdrobot_;
   };
 }

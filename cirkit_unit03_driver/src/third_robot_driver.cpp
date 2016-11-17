@@ -16,7 +16,18 @@
 using namespace std; // FIXME: this software is library to third_robot_driver_node, don't erosion grobal area.
 
 cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
-  : nh_(nh), rate_(100)
+: nh_(nh),
+  rate_(100),
+  odom_pub_(nh_.advertise<nav_msgs::Odometry>("/odom", 1)),
+  steer_pub_(nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1)),
+  cmd_vel_sub_(nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::ThirdRobotDriver::cmdVelReceived, this, _1))),
+  odom_broadcaster_(),
+  imcs01_port_(), // over write by rosparam
+  current_time_(),
+  last_time_(),
+  access_mutex_(),
+  steer_dir_(),
+  thirdrobot_(nullptr) // FIXME: init in constructor function
 {
   ros::NodeHandle n("~");
   n.param<std::string>("imcs01_port", imcs01_port_, "/dev/urbtc0");
@@ -27,16 +38,12 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
   double tred_width = 0.595;
   n.param("pulse_rate", pulse_rate, pulse_rate);
   n.param("geer_rate", geer_rate, geer_rate);
-  n.param("wheel_diameter_right", whel_diameter_right, whel_diameter_right);
+  n.param("wheel_diameter_right", wheel_diameter_right, wheel_diameter_right);
   n.param("wheel_diameter_left", wheel_diameter_left, wheel_diameter_left);
   n.param("tred_width", tred_width, tred_width);
 
   thirdrobot_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
   thirdrobot_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
-
-  odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
-  steer_pub_ = nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1);
-  cmd_vel_sub_ = nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::ThirdRobotDriver::cmdVelReceived, this, _1));
 }
 
 void cirkit::ThirdRobotDriver::init()

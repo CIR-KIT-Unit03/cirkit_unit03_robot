@@ -36,6 +36,6 @@ namespace cirkit
     boost::mutex access_mutex_;
     geometry_msgs::Twist steer_dir_;
     // third robot interface object
-    cirkit::ThirdRobotInterface *thirdrobot_;
+    cirkit::ThirdRobotInterface *cirkit_unit03_;
   };
 }

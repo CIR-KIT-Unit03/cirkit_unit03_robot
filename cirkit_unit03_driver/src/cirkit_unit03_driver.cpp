@@ -14,7 +14,7 @@
 #include <stdexcept>
 
 
-using namespace std; // FIXME: this software is library to third_robot_driver_node, don't erosion grobal area.
+using namespace std; // FIXME: this software is library to cirkit_unit03_driver_node, don't erosion grobal area.
 
 cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
 : nh_(nh),
@@ -28,7 +28,7 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
   last_time_(),
   access_mutex_(),
   steer_dir_(),
-  thirdrobot_(nullptr) // FIXME: init in constructor function
+  cirkit_unit03_(nullptr) // FIXME: init in constructor function
 {
   ros::NodeHandle n("~");
   n.param<std::string>("imcs01_port", imcs01_port_, "/dev/urbtc0");
@@ -43,25 +43,25 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
   n.param("wheel_diameter_left", wheel_diameter_left, wheel_diameter_left);
   n.param("tred_width", tred_width, tred_width);
 
-  thirdrobot_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
-  thirdrobot_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
+  cirkit_unit03_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
+  cirkit_unit03_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 
-  if(thirdrobot_->openSerialPort() == 0) {
+  if(cirkit_unit03_->openSerialPort() == 0) {
 	  ROS_INFO("Connected to Third Robot.");
-	  thirdrobot_->driveDirect(0, 0);
+	  cirkit_unit03_->driveDirect(0, 0);
 	} else {
 	  ROS_FATAL("Could not connect to Third Robot.");
-    delete thirdrobot_;
+    delete cirkit_unit03_;
     throw runtime_error("Could not connect to Third Robot");
 	}
 
-  thirdrobot_->resetOdometry();
-  thirdrobot_->setOdometry(0, 0, 0);
+  cirkit_unit03_->resetOdometry();
+  cirkit_unit03_->setOdometry(0, 0, 0);
 }
 
 cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
-  thirdrobot_->closeSerialPort();
-  delete thirdrobot_;
+  cirkit_unit03_->closeSerialPort();
+  delete cirkit_unit03_;
 }
 
 void cirkit::CirkitUnit03Driver::run() {
@@ -69,30 +69,29 @@ void cirkit::CirkitUnit03Driver::run() {
   double vel_x, vel_y, vel_yaw;
   double dt;
 
-  while(nh_.ok())
-  {
+  while(nh_.ok()) {
     current_time_ = ros::Time::now();
-    last_x = thirdrobot_->odometry_x_;
-    last_y = thirdrobot_->odometry_y_;
-    last_yaw = thirdrobot_->odometry_yaw_;
+    last_x = cirkit_unit03_->odometry_x_;
+    last_y = cirkit_unit03_->odometry_y_;
+    last_yaw = cirkit_unit03_->odometry_yaw_;
     {
       boost::mutex::scoped_lock(access_mutex_); // why use mutex?
-      if( thirdrobot_->getEncoderPacket() == -1) ROS_ERROR("Could not retrieve encoder packet.");
-      else thirdrobot_->calculateOdometry();
+      if( cirkit_unit03_->getEncoderPacket() == -1) ROS_ERROR("Could not retrieve encoder packet.");
+      else cirkit_unit03_->calculateOdometry();
     }
     dt = (current_time_ - last_time_).toSec();
-    vel_x = (thirdrobot_->odometry_x_ - last_x)/dt;
-    vel_y = (thirdrobot_->odometry_y_ - last_y)/dt;
-    vel_yaw = (thirdrobot_->odometry_yaw_ - last_yaw)/dt;
+    vel_x = (cirkit_unit03_->odometry_x_ - last_x)/dt;
+    vel_y = (cirkit_unit03_->odometry_y_ - last_y)/dt;
+    vel_yaw = (cirkit_unit03_->odometry_yaw_ - last_yaw)/dt;
 
-    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(thirdrobot_->odometry_yaw_);
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(cirkit_unit03_->odometry_yaw_);
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = current_time_;
     odom_trans.header.frame_id = "odom";
     odom_trans.child_frame_id = "base_link";
 
-    odom_trans.transform.translation.x = thirdrobot_->odometry_x_;
-    odom_trans.transform.translation.y = thirdrobot_->odometry_y_;
+    odom_trans.transform.translation.x = cirkit_unit03_->odometry_x_;
+    odom_trans.transform.translation.y = cirkit_unit03_->odometry_y_;
     odom_trans.transform.translation.z = 0.0;
     odom_trans.transform.rotation = odom_quat;
 
@@ -103,8 +102,8 @@ void cirkit::CirkitUnit03Driver::run() {
     odom.header.frame_id = "odom";
 
     //set the position
-    odom.pose.pose.position.x = thirdrobot_->odometry_x_;
-    odom.pose.pose.position.y = thirdrobot_->odometry_y_;
+    odom.pose.pose.position.x = cirkit_unit03_->odometry_x_;
+    odom.pose.pose.position.y = cirkit_unit03_->odometry_y_;
     odom.pose.pose.position.z = 0.0;
     odom.pose.pose.orientation = odom_quat;
 
@@ -126,7 +125,7 @@ void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::Cons
   static int steer = 0;
   {
     boost::mutex::scoped_lock(access_mutex_); // why use mutex?
-    steer_dir_ = thirdrobot_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
+    steer_dir_ = cirkit_unit03_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
   }
   steer_pub_.publish(steer_dir_);
 }

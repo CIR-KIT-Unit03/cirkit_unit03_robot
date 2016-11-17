@@ -6,8 +6,8 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "Third_robot_driver_node");
-  ROS_INFO("Third robot driver for ROS.");
+  ros::init(argc, argv, "cirkit_unit03_driver_node");
+  ROS_INFO("cirkit unit03 robot driver for ROS.");
 
   ros::NodeHandle nh;
   

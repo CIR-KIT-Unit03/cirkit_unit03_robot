@@ -11,6 +11,7 @@
 
 // dependency to std
 #include <iostream>
+#include <stdexcept>
 
 
 using namespace std; // FIXME: this software is library to third_robot_driver_node, don't erosion grobal area.
@@ -44,6 +45,17 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
 
   thirdrobot_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
   thirdrobot_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
+
+  if(thirdrobot_->openSerialPort() == 0) {
+	  ROS_INFO("Connected to Third Robot.");
+	  thirdrobot_->driveDirect(0, 0);
+	} else {
+	  ROS_FATAL("Could not connect to Third Robot.");
+    throw runtime_error("Could not connect to Third Robot");
+	}
+
+  thirdrobot_->resetOdometry();
+  thirdrobot_->setOdometry(0, 0, 0);
 }
 
 cirkit::ThirdRobotDriver::~ThirdRobotDriver()
@@ -56,8 +68,6 @@ void cirkit::ThirdRobotDriver::run()
   double last_x, last_y, last_yaw;
   double vel_x, vel_y, vel_yaw;
   double dt;
-
-  init();
 
   while(nh_.ok())
 	{
@@ -126,21 +136,4 @@ void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstP
 	steer_dir_ = thirdrobot_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
   }
   steer_pub_.publish(steer_dir_);
-}
-
-void cirkit::ThirdRobotDriver::init()
-{
-  if(thirdrobot_->openSerialPort() == 0)
-	{
-	  ROS_INFO("Connected to Third Robot.");
-	  thirdrobot_->driveDirect(0, 0);
-	}
-  else
-	{
-	  ROS_FATAL("Could not connect to Third Robot.");
-	  ROS_BREAK();
-	}
-
-  thirdrobot_->resetOdometry();
-  thirdrobot_->setOdometry(0, 0, 0);
 }

@@ -22,7 +22,6 @@ namespace cirkit
   private:
     // Callback function
     void cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel);
-    void init();
 
     ros::NodeHandle nh_;
     ros::Rate rate_;

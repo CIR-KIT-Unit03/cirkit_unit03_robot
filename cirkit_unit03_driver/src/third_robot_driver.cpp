@@ -59,83 +59,74 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
   thirdrobot_->setOdometry(0, 0, 0);
 }
 
-cirkit::ThirdRobotDriver::~ThirdRobotDriver()
-{
+cirkit::ThirdRobotDriver::~ThirdRobotDriver() {
   thirdrobot_->closeSerialPort();
   delete thirdrobot_;
 }
 
-void cirkit::ThirdRobotDriver::run()
-{
+void cirkit::ThirdRobotDriver::run() {
   double last_x, last_y, last_yaw;
   double vel_x, vel_y, vel_yaw;
   double dt;
 
   while(nh_.ok())
-	{
-	  current_time_ = ros::Time::now();
-	  last_x = thirdrobot_->odometry_x_;
-	  last_y = thirdrobot_->odometry_y_;
-	  last_yaw = thirdrobot_->odometry_yaw_;
-	  {
-		boost::mutex::scoped_lock(access_mutex_);
-        if( thirdrobot_->getEncoderPacket() == -1){
-		  ROS_ERROR("Could not retrieve encoder packet.");
-        }else{
-		  thirdrobot_->calculateOdometry();
-        }
-	  }
-	  dt = (current_time_ - last_time_).toSec();
-	  vel_x = (thirdrobot_->odometry_x_ - last_x)/dt;
-	  vel_y = (thirdrobot_->odometry_y_ - last_y)/dt;
-	  vel_yaw = (thirdrobot_->odometry_yaw_ - last_yaw)/dt;
-	  
-	  geometry_msgs::Quaternion odom_quat 
-		= tf::createQuaternionMsgFromYaw(thirdrobot_->odometry_yaw_);
-	  geometry_msgs::TransformStamped odom_trans;
-	  odom_trans.header.stamp = current_time_;
-	  odom_trans.header.frame_id = "odom";
-	  odom_trans.child_frame_id = "base_link";
-	
-	  odom_trans.transform.translation.x = thirdrobot_->odometry_x_;
-	  odom_trans.transform.translation.y = thirdrobot_->odometry_y_;
-	  odom_trans.transform.translation.z = 0.0;
-	  odom_trans.transform.rotation = odom_quat;
-        
-	  odom_broadcaster_.sendTransform(odom_trans);
+  {
+    current_time_ = ros::Time::now();
+    last_x = thirdrobot_->odometry_x_;
+    last_y = thirdrobot_->odometry_y_;
+    last_yaw = thirdrobot_->odometry_yaw_;
+    {
+      boost::mutex::scoped_lock(access_mutex_); // why use mutex?
+      if( thirdrobot_->getEncoderPacket() == -1) ROS_ERROR("Could not retrieve encoder packet.");
+      else thirdrobot_->calculateOdometry();
+    }
+    dt = (current_time_ - last_time_).toSec();
+    vel_x = (thirdrobot_->odometry_x_ - last_x)/dt;
+    vel_y = (thirdrobot_->odometry_y_ - last_y)/dt;
+    vel_yaw = (thirdrobot_->odometry_yaw_ - last_yaw)/dt;
 
-	  nav_msgs::Odometry odom;
-	  odom.header.stamp = current_time_;
-	  odom.header.frame_id = "odom";
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(thirdrobot_->odometry_yaw_);
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = current_time_;
+    odom_trans.header.frame_id = "odom";
+    odom_trans.child_frame_id = "base_link";
 
-	  //set the position
-	  odom.pose.pose.position.x = thirdrobot_->odometry_x_;
-	  odom.pose.pose.position.y = thirdrobot_->odometry_y_;
-	  odom.pose.pose.position.z = 0.0;
-	  odom.pose.pose.orientation = odom_quat;
-		
-	  //set the velocity
-	  odom.child_frame_id = "base_link";
-	  odom.twist.twist.linear.x = vel_x;
-	  odom.twist.twist.linear.y = vel_y;
-	  odom.twist.twist.angular.z = vel_yaw;
-		
-	  //publish the message
-	  odom_pub_.publish(odom);
+    odom_trans.transform.translation.x = thirdrobot_->odometry_x_;
+    odom_trans.transform.translation.y = thirdrobot_->odometry_y_;
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
 
-	  ros::spinOnce();
-	  rate_.sleep();
-	}
+    odom_broadcaster_.sendTransform(odom_trans);
+
+    nav_msgs::Odometry odom;
+    odom.header.stamp = current_time_;
+    odom.header.frame_id = "odom";
+
+    //set the position
+    odom.pose.pose.position.x = thirdrobot_->odometry_x_;
+    odom.pose.pose.position.y = thirdrobot_->odometry_y_;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = "base_link";
+    odom.twist.twist.linear.x = vel_x;
+    odom.twist.twist.linear.y = vel_y;
+    odom.twist.twist.angular.z = vel_yaw;
+
+    //publish the message
+    odom_pub_.publish(odom);
+
+    ros::spinOnce();
+    rate_.sleep();
+  }
 }
 
-void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
-{
+void cirkit::ThirdRobotDriver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
   static int steer = 0;
   {
-	boost::mutex::scoped_lock(access_mutex_);
-	// cout << "cmdreived.x :" << cmd_vel->linear.x << endl;
-	// cout << "cmdreived.z :" << cmd_vel->angular.z << endl;
-	steer_dir_ = thirdrobot_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
+    boost::mutex::scoped_lock(access_mutex_); // why use mutex?
+    steer_dir_ = thirdrobot_->drive(cmd_vel->linear.x, cmd_vel->angular.z);
   }
   steer_pub_.publish(steer_dir_);
 }

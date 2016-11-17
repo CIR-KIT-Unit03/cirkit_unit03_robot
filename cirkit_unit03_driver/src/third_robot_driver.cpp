@@ -51,6 +51,7 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
 	  thirdrobot_->driveDirect(0, 0);
 	} else {
 	  ROS_FATAL("Could not connect to Third Robot.");
+    delete thirdrobot_;
     throw runtime_error("Could not connect to Third Robot");
 	}
 
@@ -61,6 +62,7 @@ cirkit::ThirdRobotDriver::ThirdRobotDriver(ros::NodeHandle nh)
 cirkit::ThirdRobotDriver::~ThirdRobotDriver()
 {
   thirdrobot_->closeSerialPort();
+  delete thirdrobot_;
 }
 
 void cirkit::ThirdRobotDriver::run()

@@ -55,12 +55,22 @@ enum {
 #define SENDSIZE 7
 
 #ifndef MIN
-#define MIN(a,b) ((a < b) ? (a) : (b))
+template<typename T, typename M>
+double MIN(const T& a, const M& b) {
+  return a < b ? a : b;
+}
 #endif
 #ifndef MAX
-#define MAX(a,b) ((a > b) ? (a) : (b))
+template<typename T, typename M>
+double MAX(const T& a, const M& b) {
+  return a > b ? a : b;
+}
 #endif
 #ifndef NORMALIZE
+template<typename T>
+double NORMALIZE(const T& z) {
+  return atan2(sin(z), cos(z));
+}
 #define NORMALIZE(z) atan2(sin(z), cos(z))
 #endif
 

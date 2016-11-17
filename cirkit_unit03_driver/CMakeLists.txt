@@ -29,10 +29,10 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(third_robot_driver_node 
+add_executable(cirkit_unit03_driver_node
   src/third_robot_driver_node.cpp
   src/third_robot_driver.cpp
   src/ThirdRobotInterface/ThirdRobotInterface.cpp
 )
-add_dependencies(third_robot_driver_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(third_robot_driver_node ${catkin_LIBRARIES})
+add_dependencies(cirkit_unit03_driver_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(cirkit_unit03_driver_node ${catkin_LIBRARIES})

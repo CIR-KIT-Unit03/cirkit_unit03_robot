@@ -9,12 +9,10 @@
 
 #include <string>
 
-namespace cirkit
-{
+namespace cirkit {
   class ThirdRobotInterface; // forward declaration
 
-  class CirkitUnit03Driver
-  {
+  class CirkitUnit03Driver {
   public:
     CirkitUnit03Driver(ros::NodeHandle nh);
     ~CirkitUnit03Driver();

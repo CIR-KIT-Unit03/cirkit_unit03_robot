@@ -47,12 +47,12 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
   cirkit_unit03_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 
   if(cirkit_unit03_->openSerialPort() == 0) {
-	  ROS_INFO("Connected to Third Robot.");
+	  ROS_INFO("Connected to cirkit unit03.");
 	  cirkit_unit03_->driveDirect(0, 0);
 	} else {
-	  ROS_FATAL("Could not connect to Third Robot.");
+	  ROS_FATAL("Could not connect to cirkit unit03.");
     delete cirkit_unit03_;
-    throw runtime_error("Could not connect to Third Robot");
+    throw runtime_error("Could not connect to cirkit unit03");
 	}
 
   cirkit_unit03_->resetOdometry();

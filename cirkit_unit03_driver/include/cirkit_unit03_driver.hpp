@@ -33,7 +33,7 @@ namespace cirkit {
     ros::Time current_time_, last_time_;
     boost::mutex access_mutex_;
     geometry_msgs::Twist steer_dir_;
-    // third robot interface object
+    // cirkit unit03 interface object
     cirkit::ThirdRobotInterface *cirkit_unit03_;
   };
 }

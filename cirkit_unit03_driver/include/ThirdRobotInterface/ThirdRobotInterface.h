@@ -71,7 +71,6 @@ template<typename T>
 double NORMALIZE(const T& z) {
   return atan2(sin(z), cos(z));
 }
-#define NORMALIZE(z) atan2(sin(z), cos(z))
 #endif
 
 int plus_or_minus(double value);

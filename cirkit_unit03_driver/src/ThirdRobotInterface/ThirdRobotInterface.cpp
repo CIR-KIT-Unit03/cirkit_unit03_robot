@@ -8,12 +8,12 @@
 #include <vector>
 
 // for old c
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h> // for open()
 #include <math.h>
 #include <netinet/in.h>
-#include <stdio.h> // OLD
-#include <stdlib.h> // OLD
-#include <string.h> // FIXME: cstring
 #include <sys/ioctl.h> // for ioctl()
 #include <sys/stat.h> // for open()
 #include <sys/types.h> // for open()

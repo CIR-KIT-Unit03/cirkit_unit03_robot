@@ -119,7 +119,6 @@ void cirkit::CirkitUnit03Driver::run() {
 }
 
 void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
-  static int steer {0};
   {
     boost::mutex::scoped_lock {access_mutex_}; // why use mutex?
     steer_dir_ = cirkit_unit03_.drive(cmd_vel->linear.x, cmd_vel->angular.z);

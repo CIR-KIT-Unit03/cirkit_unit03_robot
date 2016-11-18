@@ -46,6 +46,15 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
   cirkit_unit03_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
   cirkit_unit03_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 
+  resetCommunication();
+}
+
+cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
+  cirkit_unit03_->closeSerialPort();
+  delete cirkit_unit03_;
+}
+
+void cirkit::CirkitUnit03Driver::resetCommunication() {
   if(cirkit_unit03_->openSerialPort() == 0) {
 	  ROS_INFO("Connected to cirkit unit03.");
 	  cirkit_unit03_->driveDirect(0, 0);
@@ -57,15 +66,6 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(ros::NodeHandle nh)
 
   cirkit_unit03_->resetOdometry();
   cirkit_unit03_->setOdometry(0, 0, 0);
-}
-
-cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
-  cirkit_unit03_->closeSerialPort();
-  delete cirkit_unit03_;
-}
-
-void cirkit::CirkitUnit03Driver::resetCommunication() {
-
 }
 
 void cirkit::CirkitUnit03Driver::run() {

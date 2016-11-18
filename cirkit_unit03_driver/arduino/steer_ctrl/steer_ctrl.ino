@@ -33,6 +33,7 @@ either expressed or implied, of the FreeBSD Project.
 
 /* Define pulse width time of the stepping motor. */
 #define PULSE_WIDTH_MICRO_SECOND 500
+
 /* Define direction of angular z. */
 enum {
   LEFT,
@@ -60,8 +61,8 @@ ros::Subscriber<geometry_msgs::Twist> sub("steer_ctrl", &steerCb); // Set subscr
 void setup() {
   /* Set pins Mode. */
   for (int i = cw_plus; i < ccw_minus + 1; i++) { // 3: CW+, 4: CW-, 5: CCW+, 6:CCW-
-      pinMode(i, OUTPUT);
-      digitalWrite(i, LOW); // Default pin status is LOW.
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW); // Default pin status is LOW.
   }
   /* Node handle setting. */
   nh.initNode(); // First setup the node handle.
@@ -84,7 +85,7 @@ void steerCb(const geometry_msgs::Twist& msg) {
   if (msg.angular.z < 0 && time > 50) gen_pluse(LEFT, time); // Minus mean CCW or right.
   else if (msg.angular.z > 0 && time > 50) gen_pluse(RIGHT, time); // Plus mean CW or left.
   else gen_pluse(KEEP, 0); // Zero mean keep steer.
-   /* move task */
+  /* move task */
 }
 
 /**
@@ -96,17 +97,16 @@ void steerCb(const geometry_msgs::Twist& msg) {
 void gen_pluse(const char direction, double time) {
   switch (direction) {
   case LEFT: // Task steer left.
-      noTone(cw_plus); // Unset tone. If don't running tone, not happen.
-      tone(ccw_plus, PULSE_FREQUENCY, time); // Write pulse to CCW pin. turn to CW.
-      break;
+    noTone(cw_plus); // Unset tone. If don't running tone, not happen.
+    tone(ccw_plus, PULSE_FREQUENCY, time); // Write pulse to CCW pin. turn to CW.
+    break;
   case RIGHT: // Task steer right.
-      noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
-      tone(cw_plus, PULSE_FREQUENCY, time); // Write pulse to CW pin. turn to CCW.
-      break;
+    noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
+    tone(cw_plus, PULSE_FREQUENCY, time); // Write pulse to CW pin. turn to CCW.
+    break;
   case KEEP: default: // set CW and CCW to low.
-      noTone(cw_plus); // Unset tone. If don't running tone, not happen.
-      noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
-      break;
+    noTone(cw_plus); // Unset tone. If don't running tone, not happen.
+    noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
+    break;
   }
 }
-

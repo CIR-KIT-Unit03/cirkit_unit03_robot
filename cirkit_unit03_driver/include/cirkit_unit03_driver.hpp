@@ -16,6 +16,7 @@ class CirkitUnit03Driver {
 public:
   CirkitUnit03Driver(ros::NodeHandle nh);
   ~CirkitUnit03Driver();
+  void resetCommunication();
   void run();
 private:
   // Callback function

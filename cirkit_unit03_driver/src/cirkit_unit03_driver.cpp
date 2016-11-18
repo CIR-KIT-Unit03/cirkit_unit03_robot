@@ -64,6 +64,10 @@ cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
   delete cirkit_unit03_;
 }
 
+void cirkit::CirkitUnit03Driver::resetCommunication() {
+
+}
+
 void cirkit::CirkitUnit03Driver::run() {
   double last_x, last_y, last_yaw;
   double vel_x, vel_y, vel_yaw;

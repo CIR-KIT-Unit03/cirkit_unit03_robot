@@ -16,19 +16,19 @@
 
 using namespace std; // FIXME: this software is library to cirkit_unit03_driver_node, don't erosion grobal area.
 
-cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port_, const ros::NodeHandle& nh)
+cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, const ros::NodeHandle& nh)
 : nh_ {nh},
   rate_ {100},
   odom_pub_ {nh_.advertise<nav_msgs::Odometry>("/odom", 1)},
   steer_pub_ {nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1)},
   cmd_vel_sub_ {nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::CirkitUnit03Driver::cmdVelReceived, this, _1))},
+  cirkit_unit03_ {new cirkit::ThirdRobotInterface(imcs01_port, 0)},
   odom_broadcaster_ {},
-  imcs01_port_ {}, // over write by rosparam
+  imcs01_port_ {imcs01_port},
   current_time_ {},
   last_time_ {},
   access_mutex_ {},
-  steer_dir_ {},
-  cirkit_unit03_ {new cirkit::ThirdRobotInterface(imcs01_port_, 0)}
+  steer_dir_ {}
 {
   double pulse_rate {40.0};
   double geer_rate {33.0};

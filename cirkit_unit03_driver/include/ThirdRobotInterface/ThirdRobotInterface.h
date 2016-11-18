@@ -56,19 +56,19 @@ enum {
 
 #ifndef MIN
 template<typename T, typename M>
-double MIN(const T& a, const M& b) {
+inline double MIN(const T& a, const M& b) {
   return a < b ? a : b;
 }
 #endif
 #ifndef MAX
 template<typename T, typename M>
-double MAX(const T& a, const M& b) {
+inline double MAX(const T& a, const M& b) {
   return a > b ? a : b;
 }
 #endif
 #ifndef NORMALIZE
 template<typename T>
-double NORMALIZE(const T& z) {
+inline double NORMALIZE(const T& z) {
   return atan2(sin(z), cos(z));
 }
 #endif

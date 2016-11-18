@@ -14,7 +14,7 @@ class ThirdRobotInterface; // forward declaration
 
 class CirkitUnit03Driver {
 public:
-  CirkitUnit03Driver(const ros::NodeHandle& nh);
+  CirkitUnit03Driver(const std::string&, const ros::NodeHandle&);
   ~CirkitUnit03Driver();
   void resetCommunication();
   void run();

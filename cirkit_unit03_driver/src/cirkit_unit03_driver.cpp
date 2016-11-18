@@ -16,7 +16,7 @@
 
 using namespace std; // FIXME: this software is library to cirkit_unit03_driver_node, don't erosion grobal area.
 
-cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const ros::NodeHandle& nh)
+cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port_, const ros::NodeHandle& nh)
 : nh_(nh),
   rate_(100),
   odom_pub_(nh_.advertise<nav_msgs::Odometry>("/odom", 1)),
@@ -30,8 +30,6 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const ros::NodeHandle& nh)
   steer_dir_(),
   cirkit_unit03_(nullptr) // FIXME: init in constructor function
 {
-  ros::NodeHandle n("~");
-  n.param<std::string>("imcs01_port", imcs01_port_, "/dev/urbtc0");
   double pulse_rate = 40.0;
   double geer_rate = 33.0;
   double wheel_diameter_right = 0.275;

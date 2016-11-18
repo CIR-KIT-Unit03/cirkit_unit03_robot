@@ -37,13 +37,13 @@ enum {
 };
 
 
-template<typename T, typename M>
-inline double MIN(const T& a, const M& b) {
+template<typename N, typename M>
+inline double MIN(const N& a, const M& b) {
   return a < b ? a : b;
 }
 
-template<typename T, typename M>
-inline double MAX(const T& a, const M& b) {
+template<typename N, typename M>
+inline double MAX(const N& a, const M& b) {
   return a > b ? a : b;
 }
 

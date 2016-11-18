@@ -29,27 +29,21 @@ either expressed or implied, of the FreeBSD Project.
 #include <ros.h> // Use ros_lib.
 #include <geometry_msgs/Twist.h> // Use Twist.msg. -> [linear(x,y,z), angular(x,y,z)]
 
-/* Define pin numbers. */
-#define ACCEL 9
-#define BACK_GEAR 8
-#define CW 3
-#define CCW 4
 /* Define pulse width time of the stepping motor. */
 #define PULSE_WIDTH_MICRO_SECOND 500
-/* Define max speed to 220. */
-#define MAX_SPEED 220
 /* Define direction of angular z. */
-#define LEFT 0
-#define RIGHT 1
-#define KEEP 2
-/* Define direction of back gear. */
-#define FORWARD 0
-#define BACK 1
+enum {
+  LEFT,
+  RIGHT,
+  KEEP
+};
 
-const int cw_plus = 3;
-const int cw_minus = 4;
-const int ccw_plus = 5;
-const int ccw_minus = 6;
+enum {
+  cw_plus = 3,
+  cw_minus,
+  ccw_plus,
+  ccw_minus
+};
 
 /* Declare proto type functions. */
 void gen_pulse(const char direction, double time); // Write pulse to the stepping motor.

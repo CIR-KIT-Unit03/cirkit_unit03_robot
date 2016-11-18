@@ -34,7 +34,6 @@ either expressed or implied, of the FreeBSD Project.
 /* Define pulse width time of the stepping motor. */
 #define PULSE_WIDTH_MICRO_SECOND 500
 
-/* Define direction of angular z. */
 enum {
   LEFT,
   RIGHT,
@@ -85,7 +84,6 @@ void steerCb(const geometry_msgs::Twist& msg) {
   if (msg.angular.z < 0 && time > 50) gen_pluse(LEFT, time); // Minus mean CCW or right.
   else if (msg.angular.z > 0 && time > 50) gen_pluse(RIGHT, time); // Plus mean CW or left.
   else gen_pluse(KEEP, 0); // Zero mean keep steer.
-  /* move task */
 }
 
 /**

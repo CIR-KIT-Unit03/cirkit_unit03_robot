@@ -76,7 +76,7 @@ namespace cirkit {
 class ThirdRobotInterface {
 public:
   //! Constructor
-  ThirdRobotInterface(std::string new_serial_port_imcs01, int new_baudrate_imcs01);
+  ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01);
 
   //! Destructor
   ~ThirdRobotInterface();

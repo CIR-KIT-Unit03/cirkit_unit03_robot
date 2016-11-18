@@ -21,7 +21,7 @@
 
 using namespace std; // FIXME: don't erode grobal scope
 
-cirkit::ThirdRobotInterface::ThirdRobotInterface(std::string new_serial_port_imcs01, int new_baudrate_imcs01) {
+cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01) {
   imcs01_port_name = new_serial_port_imcs01;
   fd_imcs01 = -1;
   baudrate_imcs01 = new_baudrate_imcs01;

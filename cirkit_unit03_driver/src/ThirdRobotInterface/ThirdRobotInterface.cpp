@@ -8,7 +8,6 @@
 #include <vector>
 
 // for old c
-#include <cstdint> // what for? and OLD
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

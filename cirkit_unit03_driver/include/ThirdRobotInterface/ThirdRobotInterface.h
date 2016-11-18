@@ -14,7 +14,6 @@
 #include <string>
 
 // For old c
-#include <cstdint> // what for? and OLD
 #include <termios.h>
 
 enum {

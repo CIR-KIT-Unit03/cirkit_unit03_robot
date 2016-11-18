@@ -78,20 +78,16 @@ int cirkit::ThirdRobotInterface::openSerialPort() {
 // Set the serial port
 int cirkit::ThirdRobotInterface::setSerialPort() {
   // Setting iMCs01
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0) {
     throw logic_error("imcs01 is already open");
   }
   fd_imcs01 = open(imcs01_port_name.c_str(), O_RDWR);
-  if(fd_imcs01 > 0)
-  {
+  if (fd_imcs01 > 0) {
     tcgetattr(fd_imcs01, &oldtio_imcs01);
-  }
-  else
-  {
+  } else {
     throw logic_error("Faild to open port: imcs01");
   }
-  if(ioctl(fd_imcs01, URBTC_CONTINUOUS_READ) < 0)
-  {
+  if (ioctl(fd_imcs01, URBTC_CONTINUOUS_READ) < 0) {
     throw logic_error("Faild to ioctl: URBTC_CONTINUOUS_READ");
   }
 
@@ -109,12 +105,10 @@ int cirkit::ThirdRobotInterface::setSerialPort() {
   cmd_ccmd.breaks     = SET_BREAKS | CH0 | CH1 | CH2 | CH3; //No Brake;
   cmd_ccmd.magicno    = 0x00;
 
-  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0)
-  {
+  if (ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) {
     throw logic_error("Faild to ioctl: URBTC_COUNTER_SET");
   }
-  if(write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd)) < 0)
-  {
+  if (write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd)) < 0) {
     throw logic_error("Faild to write");
   }
 
@@ -277,8 +271,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
   } else {
     // (rear_speed < 0) -> Back
     average_spped_x = 0;
-    if(stasis_ == ROBOT_STASIS_BACK_STOP
-        || stasis_ == ROBOT_STASIS_BACK) {
+    if(stasis_ == ROBOT_STASIS_BACK_STOP || stasis_ == ROBOT_STASIS_BACK) {
       // Now backing
       cmd_ccmd.offset[0] = 32767; // iMCs01 CH101 PIN2 is 0[V]. Backing flag.
       cmd_ccmd.offset[1] = 60000; // Back is constant speed.

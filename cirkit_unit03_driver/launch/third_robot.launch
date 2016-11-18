@@ -1,5 +1,5 @@
 <launch>
-  <node name="third_robot_driver_node" pkg="third_robot_driver" type="third_robot_driver_node">
+  <node name="cirkit_unit03_driver_node" pkg="cirkit_unit03_driver" type="cirkit_unit03_driver_node">
     <param name="imcs01_port" type="string" value="/dev/urbtc0" />
     <param name="pulse_rate" type="double" value="45.0" />
     <param name="geer_rate" type="double" value="33.0" />

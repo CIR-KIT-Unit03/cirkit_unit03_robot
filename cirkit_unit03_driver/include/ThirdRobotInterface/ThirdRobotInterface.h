@@ -36,21 +36,6 @@ enum {
   STOP_MODE
 };
 
-//! Robot max encoder counts
-#define ROBOT_MAX_ENCODER_COUNTS 65535
-
-//! Length of between front wheel and rear wheel [m]
-#define WHEELBASE_LENGTH 0.94
-
-//! Width of tread [m]
-#define TREAD_WIDTH 0.53
-
-
-//! Max linear velocity [m/s]
-#define MAX_LIN_VEL 1.11 // 1.11[m/s] => 4.0[km/h]
-
-//! Send packet size for ctrl stepping motor to arduino
-#define SENDSIZE 7
 
 template<typename T, typename M>
 inline double MIN(const T& a, const M& b) {

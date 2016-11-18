@@ -19,6 +19,17 @@
 #include <sys/types.h> // for open()
 #include <unistd.h> // for close()
 
+//! Robot max encoder counts
+static constexpr int ROBOT_MAX_ENCODER_COUNTS {65535};
+//! Length of between front wheel and rear wheel [m]
+static constexpr double WHEELBASE_LENGTH {0.94};
+//! Width of tread [m]
+static constexpr double TREAD_WIDTH {0.53};
+//! Max linear velocity [m/s]
+static constexpr double MAX_LIN_VEL {1.11}; // 1.11[m/s] => 4.0[km/h]
+//! Send packet size for ctrl stepping motor to arduino
+static constexpr int SENDSIZE {7};
+
 using namespace std; // FIXME: don't erode grobal scope
 
 cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01) {

@@ -10,9 +10,6 @@
 #include <iostream>
 #include <stdexcept>
 
-
-using namespace std; // FIXME: this software is library to cirkit_unit03_driver_node, don't erosion grobal area.
-
 cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, const ros::NodeHandle& nh)
 : nh_ {nh},
   rate_ {100},
@@ -50,12 +47,12 @@ cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
 
 void cirkit::CirkitUnit03Driver::resetCommunication() {
   if (cirkit_unit03_.openSerialPort() == 0) {
-	  ROS_INFO("Connected to cirkit unit03.");
-	  cirkit_unit03_.driveDirect(0, 0);
-	} else {
-	  ROS_FATAL("Could not connect to cirkit unit03.");
-    throw runtime_error {"Could not connect to cirkit unit03"};
-	}
+    ROS_INFO("Connected to cirkit unit03.");
+    cirkit_unit03_.driveDirect(0, 0);
+  } else {
+    ROS_FATAL("Could not connect to cirkit unit03.");
+    throw std::runtime_error {"Could not connect to cirkit unit03"};
+  }
 
   cirkit_unit03_.resetOdometry();
   cirkit_unit03_.setOdometry(0, 0, 0);

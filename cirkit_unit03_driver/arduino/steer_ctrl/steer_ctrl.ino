@@ -1,4 +1,6 @@
 /**
+The original code:
+
 Copyright (c) 2015, Yusuke Doi
 All rights reserved.
 

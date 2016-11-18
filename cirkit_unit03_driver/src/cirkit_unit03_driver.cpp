@@ -28,7 +28,7 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port_, 
   last_time_(),
   access_mutex_(),
   steer_dir_(),
-  cirkit_unit03_(nullptr) // FIXME: init in constructor function
+  cirkit_unit03_(new cirkit::ThirdRobotInterface(imcs01_port_, 0))
 {
   double pulse_rate = 40.0;
   double geer_rate = 33.0;
@@ -41,7 +41,6 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port_, 
   n.param("wheel_diameter_left", wheel_diameter_left, wheel_diameter_left);
   n.param("tred_width", tred_width, tred_width);
 
-  cirkit_unit03_ = new cirkit::ThirdRobotInterface(imcs01_port_, 0); // FIXME: path received by argument for constructor
   cirkit_unit03_->setParams(pulse_rate, geer_rate, wheel_diameter_right, wheel_diameter_left, tred_width);
 
   resetCommunication();

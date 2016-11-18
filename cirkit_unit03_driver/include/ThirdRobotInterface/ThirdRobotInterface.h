@@ -10,7 +10,6 @@
 #include "imcs01_driver/driver/urobotc.h"
 
 // For std
-#include <numeric> // what for?
 #include <string>
 
 // For old c

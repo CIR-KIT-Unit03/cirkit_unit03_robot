@@ -29,7 +29,7 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, c
   double wheel_diameter_right {0.275};
   double wheel_diameter_left {0.275};
   double tred_width {0.595};
-  ros::NodeHandle n {nh_, "~"};
+  ros::NodeHandle n {"~"};
   n.param("pulse_rate", pulse_rate, pulse_rate);
   n.param("geer_rate", geer_rate, geer_rate);
   n.param("wheel_diameter_right", wheel_diameter_right, wheel_diameter_right);

@@ -54,24 +54,20 @@ enum {
 //! Send packet size for ctrl stepping motor to arduino
 #define SENDSIZE 7
 
-#ifndef MIN
 template<typename T, typename M>
 inline double MIN(const T& a, const M& b) {
   return a < b ? a : b;
 }
-#endif
-#ifndef MAX
+
 template<typename T, typename M>
 inline double MAX(const T& a, const M& b) {
   return a > b ? a : b;
 }
-#endif
-#ifndef NORMALIZE
+
 template<typename T>
 inline double NORMALIZE(const T& z) {
   return atan2(sin(z), cos(z));
 }
-#endif
 
 int plus_or_minus(double value);
 

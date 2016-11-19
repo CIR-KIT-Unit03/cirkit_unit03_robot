@@ -30,8 +30,8 @@ using namespace std; // FIXME: don't erode grobal scope
 
 cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01)
 : imcs01_port_name {new_serial_port_imcs01},
-  df_imcs01 {-1},
-  baudrate_imcs01 {new_baudrate_imcs01}
+  fd_imcs01 {-1},
+  baudrate_imcs01 {new_baudrate_imcs01},
   steer_angle {0.0},
   last_rear_encoder_time {0},
   stasis_ {ROBOT_STASIS_FORWARD_STOP}
@@ -323,6 +323,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
 // *****************************************************************************
 // Read the encoders from iMCs01
 int cirkit::ThirdRobotInterface::getEncoderPacket() {
+  std::lock_guard<std::mutex> lck {communication_mutex};
   if(read(fd_imcs01, &cmd_uin, sizeof(cmd_uin)) != sizeof(cmd_uin)){
     return -1;
   } else {
@@ -457,6 +458,7 @@ void cirkit::ThirdRobotInterface::writeCmd(ccmd cmd) {
   if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) { // FIXME: setup URBTC_COUNTER_SET on every communicate, realry? It wrong!
     ROS_WARN("URBTC_COUNTER_SET fail."); // error // FIXME: error? if error, you should not write, right?
   }
+  std::lock_guard<std::mutex> lck {communication_mutex};
   if(write(fd_imcs01, &cmd, sizeof(cmd)) < 0) {
     ROS_WARN("iMCs01 write fail.");
   }

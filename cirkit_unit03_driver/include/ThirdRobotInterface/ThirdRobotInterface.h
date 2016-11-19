@@ -11,6 +11,7 @@
 
 // For std
 #include <string>
+#include <mutex>
 
 // For old c
 #include <termios.h>
@@ -150,6 +151,8 @@ protected:
   double linear_velocity;
   //! Forward or Back mode flag
   int runmode;
+  //! Mutex for communication
+  std::mutex communication_mutex;
 };
 }
 #endif // THIRD_ROBOT_INTERFACE_H_

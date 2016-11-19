@@ -15,7 +15,7 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, c
   rate_ {100},
   odom_pub_ {nh_.advertise<nav_msgs::Odometry>("/odom", 1)},
   steer_pub_ {nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1)},
-  cmd_vel_sub_ {nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, boost::bind(&cirkit::CirkitUnit03Driver::cmdVelReceived, this, _1))},
+  cmd_vel_sub_ {nh_.subscribe<geometry_msgs::Twist>("/cmd_vel", 1, &cirkit::CirkitUnit03Driver::cmdVelReceived, this)},
   cirkit_unit03_ {imcs01_port, 0},
   odom_broadcaster_ {},
   imcs01_port_ {imcs01_port},

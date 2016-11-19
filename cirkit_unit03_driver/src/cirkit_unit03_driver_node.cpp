@@ -16,7 +16,7 @@ int main(int argc, char** argv)
   std::string imcs01_port {"/dev/urbtc0"};
   n.param<std::string>("imcs01_port", imcs01_port, imcs01_port);
   
-  cirkit::CirkitUnit03Driver driver(std::move(imcs01_port), ros::NodeHandle {});
+  cirkit::CirkitUnit03Driver driver {std::move(imcs01_port), ros::NodeHandle {}};
   driver.run();
 
   return 0;

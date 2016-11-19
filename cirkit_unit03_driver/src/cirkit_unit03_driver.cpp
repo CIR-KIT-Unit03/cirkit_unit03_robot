@@ -18,7 +18,6 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, c
   imcs01_port_ {imcs01_port},
   current_time_ {},
   last_time_ {},
-  access_mutex_ {},
   steer_dir_ {}
 {
   double pulse_rate {40.0};
@@ -65,11 +64,8 @@ void cirkit::CirkitUnit03Driver::run() {
     last_x = cirkit_unit03_.odometry_x_;
     last_y = cirkit_unit03_.odometry_y_;
     last_yaw = cirkit_unit03_.odometry_yaw_;
-    {
-      boost::mutex::scoped_lock {access_mutex_}; // why use mutex?
-      if (cirkit_unit03_.getEncoderPacket() == -1) ROS_ERROR("Could not retrieve encoder packet.");
-      else cirkit_unit03_.calculateOdometry();
-    }
+    if (cirkit_unit03_.getEncoderPacket() == -1) ROS_ERROR("Could not retrieve encoder packet.");
+    else cirkit_unit03_.calculateOdometry();
     dt = (current_time_ - last_time_).toSec();
     vel_x = (cirkit_unit03_.odometry_x_ - last_x)/dt;
     vel_y = (cirkit_unit03_.odometry_y_ - last_y)/dt;
@@ -113,9 +109,6 @@ void cirkit::CirkitUnit03Driver::run() {
 }
 
 void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
-  {
-    boost::mutex::scoped_lock {access_mutex_}; // why use mutex?
-    steer_dir_ = cirkit_unit03_.drive(cmd_vel->linear.x, cmd_vel->angular.z);
-  }
+  steer_dir_ = cirkit_unit03_.drive(cmd_vel->linear.x, cmd_vel->angular.z);
   steer_pub_.publish(steer_dir_);
 }

@@ -35,7 +35,6 @@ private:
   tf::TransformBroadcaster odom_broadcaster_;
   std::string imcs01_port_;
   ros::Time current_time_, last_time_;
-  boost::mutex access_mutex_;
   geometry_msgs::Twist steer_dir_;
 };
 }

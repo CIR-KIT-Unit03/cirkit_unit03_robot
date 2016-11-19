@@ -28,18 +28,18 @@ static constexpr double MAX_LIN_VEL {1.11}; // 1.11[m/s] => 4.0[km/h]
 
 using namespace std; // FIXME: don't erode grobal scope
 
-cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01) {
-  imcs01_port_name = new_serial_port_imcs01;
-  fd_imcs01 = -1;
-  baudrate_imcs01 = new_baudrate_imcs01;
-
+cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01)
+: imcs01_port_name {new_serial_port_imcs01},
+  df_imcs01 {-1},
+  baudrate_imcs01 {new_baudrate_imcs01}
+  steer_angle {0.0},
+  last_rear_encoder_time {0},
+  stasis_ {ROBOT_STASIS_FORWARD_STOP}
+{
   for(int i = 0; i < 2; i++) {
     delta_rear_encoder_counts[i] = -1;
     last_rear_encoder_counts[i] = 0;
   }
-  steer_angle = 0.0;
-  last_rear_encoder_time = 0;
-  stasis_ = ROBOT_STASIS_FORWARD_STOP;
 
   resetOdometry();
 }

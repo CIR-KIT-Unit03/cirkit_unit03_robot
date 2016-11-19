@@ -212,8 +212,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
   // Forward
   if(rear_speed >= 0.0) {
     double rear_speed_m_s = MIN(rear_speed, MAX_LIN_VEL); // return smaller
-    if(stasis_ == ROBOT_STASIS_FORWARD
-        || stasis_ == ROBOT_STASIS_FORWARD_STOP) {
+    if(stasis_ == ROBOT_STASIS_FORWARD || stasis_ == ROBOT_STASIS_FORWARD_STOP) {
       // Now Forwarding
       // e = rear_speed_m_s - linear_velocity;
       // u = u1 + (gain_p + gain_i * delta_rear_encoder_time
@@ -455,7 +454,7 @@ void cirkit::ThirdRobotInterface::calculateOdometry() {
 
 
 void cirkit::ThirdRobotInterface::writeCmd(ccmd cmd) {
-  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) {
+  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) { // FIXME: setup URBTC_COUNTER_SET on every communicate, realry? It wrong!
     ROS_WARN("URBTC_COUNTER_SET fail."); // error // FIXME: error? if error, you should not write, right?
   }
   if(write(fd_imcs01, &cmd, sizeof(cmd)) < 0) {

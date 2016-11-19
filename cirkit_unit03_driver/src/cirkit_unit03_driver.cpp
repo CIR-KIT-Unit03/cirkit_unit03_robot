@@ -3,9 +3,6 @@
 // dependency to ROS
 #include <nav_msgs/Odometry.h> // odom
 
-// dependency to Boost
-#include <boost/thread.hpp>
-
 // dependency to std
 #include <iostream>
 #include <stdexcept>

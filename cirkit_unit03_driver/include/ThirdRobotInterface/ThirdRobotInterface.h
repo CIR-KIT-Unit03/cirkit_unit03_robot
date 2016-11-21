@@ -152,7 +152,7 @@ protected:
   //! Forward or Back mode flag
   int runmode;
   //! Mutex for communication
-  std::mutex communication_mutex;
+  std::mutex communication_mutex_;
 };
 }
 #endif // THIRD_ROBOT_INTERFACE_H_

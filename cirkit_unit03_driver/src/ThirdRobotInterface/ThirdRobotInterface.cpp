@@ -323,8 +323,8 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
 // *****************************************************************************
 // Read the encoders from iMCs01
 int cirkit::ThirdRobotInterface::getEncoderPacket() {
-  std::lock_guard<std::mutex> lck {communication_mutex};
-  if(read(fd_imcs01, &cmd_uin, sizeof(cmd_uin)) != sizeof(cmd_uin)){
+  std::lock_guard<std::mutex> lck {communication_mutex_};
+  if (read(fd_imcs01, &cmd_uin, sizeof(cmd_uin)) != sizeof(cmd_uin)) {
     return -1;
   } else {
     return parseEncoderPackets();
@@ -351,7 +351,7 @@ int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
   double R = 0.0;
   const double n = 1.00;
 
-  if(steer_encoder_counts == 0.0) {
+  if (steer_encoder_counts == 0.0) {
     steer_angle = 0.0;
   } else {
     double tmp = steer_encoder_counts*67.0/3633.0;
@@ -366,7 +366,7 @@ int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
   move_ave[cnt%5] = steer_angle;
   size_t size = move_ave.size();
   double sum = 0;
-  for(unsigned int i = 0; i < size; i++) {
+  for (unsigned int i = 0; i < size; i++) {
     sum += move_ave[i];
   }
   steer_angle = sum / (double)size;
@@ -380,14 +380,14 @@ int cirkit::ThirdRobotInterface::parseRearEncoderCounts() {
   int rear_encoder_counts[2] = {(int)(cmd_uin.ct[2]), -(int)(cmd_uin.ct[3])};
 
   delta_rear_encoder_time = (double)(cmd_uin.time) - last_rear_encoder_time;
-  if(delta_rear_encoder_time < 0) {
+  if (delta_rear_encoder_time < 0) {
     delta_rear_encoder_time = 65535 - (last_rear_encoder_time - cmd_uin.time);
   }
   delta_rear_encoder_time = delta_rear_encoder_time / 1000.0; // [ms] -> [s]
   last_rear_encoder_time = (double)(cmd_uin.time);
 
-  for(int i = 0; i < 2; i++) {
-    if(delta_rear_encoder_counts[i] == -1
+  for (int i = 0; i < 2; i++) {
+    if (delta_rear_encoder_counts[i] == -1
         || rear_encoder_counts[i] == last_rear_encoder_counts[i]) { // First time.
 
       delta_rear_encoder_counts[i] = 0;
@@ -396,10 +396,10 @@ int cirkit::ThirdRobotInterface::parseRearEncoderCounts() {
       delta_rear_encoder_counts[i] = rear_encoder_counts[i] - last_rear_encoder_counts[i];
 
       // checking imcs01 counter overflow.
-      if(delta_rear_encoder_counts[i] > ROBOT_MAX_ENCODER_COUNTS/10) {
+      if (delta_rear_encoder_counts[i] > ROBOT_MAX_ENCODER_COUNTS/10) {
         delta_rear_encoder_counts[i] = delta_rear_encoder_counts[i] - ROBOT_MAX_ENCODER_COUNTS;
       }
-      if(delta_rear_encoder_counts[i] < -ROBOT_MAX_ENCODER_COUNTS/10) {
+      if (delta_rear_encoder_counts[i] < -ROBOT_MAX_ENCODER_COUNTS/10) {
         delta_rear_encoder_counts[i] = delta_rear_encoder_counts[i] + ROBOT_MAX_ENCODER_COUNTS;
       }
     }
@@ -429,7 +429,7 @@ void cirkit::ThirdRobotInterface::setOdometry(double new_x, double new_y, double
 // Calculate Third Robot odometry
 void cirkit::ThirdRobotInterface::calculateOdometry() {
   // Pulse to distance
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     delta_dist[i] = (delta_rear_encoder_counts[i]/PulseRate/GeerRate)*(WheelDiameter[i]*M_PI);
   }
 
@@ -447,7 +447,7 @@ void cirkit::ThirdRobotInterface::calculateOdometry() {
   odometry_y_ += (((last_delta_dist[0] + last_delta_dist[1]) * sin(last_odometry_yaw) +
       (delta_dist[0] + delta_dist[1]) * sin(odometry_yaw_)) / 4.0);
 
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     last_delta_dist[i] = delta_dist[i];
   }
   last_odometry_yaw = odometry_yaw_;
@@ -455,18 +455,18 @@ void cirkit::ThirdRobotInterface::calculateOdometry() {
 
 
 void cirkit::ThirdRobotInterface::writeCmd(ccmd cmd) {
-  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) { // FIXME: setup URBTC_COUNTER_SET on every communicate, realry? It wrong!
+  if (ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) { // FIXME: setup URBTC_COUNTER_SET on every communicate, realry? It wrong!
     ROS_WARN("URBTC_COUNTER_SET fail."); // error // FIXME: error? if error, you should not write, right?
   }
-  std::lock_guard<std::mutex> lck {communication_mutex};
-  if(write(fd_imcs01, &cmd, sizeof(cmd)) < 0) {
+  std::lock_guard<std::mutex> lck {communication_mutex_};
+  if (write(fd_imcs01, &cmd, sizeof(cmd)) < 0) {
     ROS_WARN("iMCs01 write fail.");
   }
 }
 
 geometry_msgs::Twist cirkit::ThirdRobotInterface::fixFrontAngle(double angular_diff) {
   geometry_msgs::Twist ret_steer;
-  if(angular_diff > 0) {
+  if (angular_diff > 0) {
     ret_steer.angular.z = 1;
     ret_steer.angular.x = fabs(angular_diff);
     return ret_steer;
@@ -482,7 +482,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::fixFrontAngle(double angular_d
 }
 
 int plus_or_minus(double value) {
-  if(value > 0) {
+  if (value > 0) {
     return 1;
   } else if(value < 0) {
     return -1;

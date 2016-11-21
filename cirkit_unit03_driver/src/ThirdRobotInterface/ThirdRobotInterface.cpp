@@ -36,7 +36,7 @@ cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_p
   last_rear_encoder_time {0},
   stasis_ {ROBOT_STASIS_FORWARD_STOP}
 {
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     delta_rear_encoder_counts[i] = -1;
     last_rear_encoder_counts[i] = 0;
   }
@@ -54,7 +54,7 @@ cirkit::ThirdRobotInterface::~ThirdRobotInterface() {
   write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd));
 
   //! iMCs01
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0) {
     tcsetattr(fd_imcs01, TCSANOW, &oldtio_imcs01);
     close(fd_imcs01);
   }
@@ -143,7 +143,7 @@ int cirkit::ThirdRobotInterface::closeSerialPort() {
   drive(0.0, 0.0);
   usleep(1000);
 
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0) {
     tcsetattr(fd_imcs01, TCSANOW, &oldtio_imcs01);
     close(fd_imcs01);
     fd_imcs01 = -1;
@@ -162,9 +162,9 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::drive(double linear_speed, dou
   double front_angle_deg = 0;
   double rear_speed_m_s = 0;
 
-  if(-0.005 < linear_speed && linear_speed < 0.005 && fabs(angular_speed) > 0.0) {
+  if (-0.005 < linear_speed && linear_speed < 0.005 && fabs(angular_speed) > 0.0) {
     rear_speed_m_s = 0.3;
-    if(angular_speed > 0) {
+    if (angular_speed > 0) {
       front_angle_deg = 60;
     } else {
       front_angle_deg = -60;
@@ -210,9 +210,9 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
   double duty = 0;
 
   // Forward
-  if(rear_speed >= 0.0) {
+  if (rear_speed >= 0.0) {
     double rear_speed_m_s = MIN(rear_speed, MAX_LIN_VEL); // return smaller
-    if(stasis_ == ROBOT_STASIS_FORWARD || stasis_ == ROBOT_STASIS_FORWARD_STOP) {
+    if (stasis_ == ROBOT_STASIS_FORWARD || stasis_ == ROBOT_STASIS_FORWARD_STOP) {
       // Now Forwarding
       // e = rear_speed_m_s - linear_velocity;
       // u = u1 + (gain_p + gain_i * delta_rear_encoder_time
@@ -223,7 +223,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       u = (int)(32767.0 + 32767.0 * average_spped_x *1.0);
       // ROS_INFO("a : %f", average_spped_x);
       // ROS_INFO("u : %f", u);
-      if(rear_speed == 0.0) {
+      if (rear_speed == 0.0) {
         u = 32767;
         average_spped_x = 0;
       }
@@ -254,7 +254,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       average_spped_x = 0;
       writeCmd(cmd_ccmd);
 
-      if(forward_stop_cnt >= 20) {
+      if (forward_stop_cnt >= 20) {
         stasis_ = ROBOT_STASIS_FORWARD_STOP;
         forward_stop_cnt = 0;
         for (int i = 0; i < 10; ++i) {
@@ -270,7 +270,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
   } else {
     // (rear_speed < 0) -> Back
     average_spped_x = 0;
-    if(stasis_ == ROBOT_STASIS_BACK_STOP || stasis_ == ROBOT_STASIS_BACK) {
+    if (stasis_ == ROBOT_STASIS_BACK_STOP || stasis_ == ROBOT_STASIS_BACK) {
       // Now backing
       cmd_ccmd.offset[0] = 32767; // iMCs01 CH101 PIN2 is 0[V]. Backing flag.
       cmd_ccmd.offset[1] = 60000; // Back is constant speed.
@@ -285,7 +285,7 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       ROS_INFO("ROBOT_STASIS_BACK");
     } else {
       // Now forwarding
-      if(back_stop_cnt >= 10) {
+      if (back_stop_cnt >= 10) {
         stasis_ = ROBOT_STASIS_BACK_STOP;
         back_stop_cnt = 0;
         cmd_ccmd.offset[0] = 32767; // iMCs01 CH101 PIN2 is 0[V].  Backing flag.

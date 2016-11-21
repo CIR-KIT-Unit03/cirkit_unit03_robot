@@ -34,13 +34,15 @@ either expressed or implied, of the FreeBSD Project.
 /* Define pulse width time of the stepping motor. */
 #define PULSE_WIDTH_MICRO_SECOND 500
 
-enum {
+enum
+{
   LEFT,
   RIGHT,
   KEEP
 };
 
-enum {
+enum
+{
   cw_plus = 3,
   cw_minus,
   ccw_plus,
@@ -57,9 +59,11 @@ const unsigned int PULSE_FREQUENCY = 1000l * 1000 / (PULSE_WIDTH_MICRO_SECOND * 
 ros::NodeHandle nh; // The nodeHandle.
 ros::Subscriber<geometry_msgs::Twist> sub("steer_ctrl", &steerCb); // Set subscribe the motor_driver topic.
 
-void setup() {
+void setup()
+{
   /* Set pins Mode. */
-  for (int i = cw_plus; i < ccw_minus + 1; i++) { // 3: CW+, 4: CW-, 5: CCW+, 6:CCW-
+  for (int i = cw_plus; i < ccw_minus + 1; i++)
+  { // 3: CW+, 4: CW-, 5: CCW+, 6:CCW-
     pinMode(i, OUTPUT);
     digitalWrite(i, LOW); // Default pin status is LOW.
   }
@@ -68,7 +72,8 @@ void setup() {
   nh.subscribe(sub); // Start subscribe the "steer_ctrl" topic.
 }
 
-void loop() {
+void loop()
+{
   nh.spinOnce(); // Check topic and if change it, run the call back function.
 }
 
@@ -79,7 +84,8 @@ void loop() {
  * @author "Yusuke Doi"
  * @param msg This param is msg object of the motor_driver topic.
  */
-void steerCb(const geometry_msgs::Twist& msg) {
+void steerCb(const geometry_msgs::Twist& msg)
+{
   int time = msg.angular.x * 10;
   if (msg.angular.z < 0 && time > 50) gen_pluse(LEFT, time); // Minus mean CCW or right.
   else if (msg.angular.z > 0 && time > 50) gen_pluse(RIGHT, time); // Plus mean CW or left.
@@ -92,8 +98,10 @@ void steerCb(const geometry_msgs::Twist& msg) {
  * @author "Yusuke Doi"
  * @param direction Steer to direction.
  */
-void gen_pluse(const char direction, double time) {
-  switch (direction) {
+void gen_pluse(const char direction, double time)
+{
+  switch (direction)
+  {
   case LEFT: // Task steer left.
     noTone(cw_plus); // Unset tone. If don't running tone, not happen.
     tone(ccw_plus, PULSE_FREQUENCY, time); // Write pulse to CCW pin. turn to CW.

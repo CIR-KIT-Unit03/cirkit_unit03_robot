@@ -37,15 +37,20 @@ cirkit::CirkitUnit03Driver::CirkitUnit03Driver(const std::string& imcs01_port, c
   resetCommunication();
 }
 
-cirkit::CirkitUnit03Driver::~CirkitUnit03Driver() {
+cirkit::CirkitUnit03Driver::~CirkitUnit03Driver()
+{
   cirkit_unit03_.closeSerialPort();
 }
 
-void cirkit::CirkitUnit03Driver::resetCommunication() {
-  if (cirkit_unit03_.openSerialPort() == 0) {
+void cirkit::CirkitUnit03Driver::resetCommunication()
+{
+  if (cirkit_unit03_.openSerialPort() == 0)
+  {
     ROS_INFO("Connected to cirkit unit03.");
     cirkit_unit03_.driveDirect(0, 0);
-  } else {
+  }
+  else
+  {
     ROS_FATAL("Could not connect to cirkit unit03.");
     throw std::runtime_error {"Could not connect to cirkit unit03"};
   }
@@ -54,12 +59,14 @@ void cirkit::CirkitUnit03Driver::resetCommunication() {
   cirkit_unit03_.setOdometry(0, 0, 0);
 }
 
-void cirkit::CirkitUnit03Driver::run() {
+void cirkit::CirkitUnit03Driver::run()
+{
   double last_x, last_y, last_yaw;
   double vel_x, vel_y, vel_yaw;
   double dt;
 
-  while (nh_.ok()) {
+  while (nh_.ok())
+  {
     current_time_ = ros::Time::now();
     last_x = cirkit_unit03_.odometry_x_;
     last_y = cirkit_unit03_.odometry_y_;
@@ -108,7 +115,8 @@ void cirkit::CirkitUnit03Driver::run() {
   }
 }
 
-void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
+void cirkit::CirkitUnit03Driver::cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel)
+{
   steer_dir_ = cirkit_unit03_.drive(cmd_vel->linear.x, cmd_vel->angular.z);
   steer_pub_.publish(steer_dir_);
 }

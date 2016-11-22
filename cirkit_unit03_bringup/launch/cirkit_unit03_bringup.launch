@@ -10,8 +10,8 @@
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
   </node>
 
-  <include file="$(find cirkit_unit03_merge_laser)/launch/cirkit_unit03_laserscan_merger.launch" />
+  <include file="$(find cirkit_unit03_control)/launch/laserscan_merger.launch" />
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cirkit_unit03_desktop)/config/autorun.rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cirkit_unit03_viz)/config/autorun.rviz" required="true" />
 
 </launch>

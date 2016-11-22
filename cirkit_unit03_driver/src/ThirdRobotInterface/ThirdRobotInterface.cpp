@@ -8,36 +8,45 @@
 #include <vector>
 
 // for old c
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h> // for open()
 #include <math.h>
 #include <netinet/in.h>
-#include <stdio.h> // OLD
-#include <stdlib.h> // OLD
-#include <string.h> // FIXME: cstring
 #include <sys/ioctl.h> // for ioctl()
 #include <sys/stat.h> // for open()
 #include <sys/types.h> // for open()
 #include <unistd.h> // for close()
 
+//! Robot max encoder counts
+static constexpr int ROBOT_MAX_ENCODER_COUNTS {65535};
+//! Length of between front wheel and rear wheel [m]
+static constexpr double WHEELBASE_LENGTH {0.94};
+//! Max linear velocity [m/s]
+static constexpr double MAX_LIN_VEL {1.11}; // 1.11[m/s] => 4.0[km/h]
+
 using namespace std; // FIXME: don't erode grobal scope
 
-cirkit::ThirdRobotInterface::ThirdRobotInterface(std::string new_serial_port_imcs01, int new_baudrate_imcs01) {
-  imcs01_port_name = new_serial_port_imcs01;
-  fd_imcs01 = -1;
-  baudrate_imcs01 = new_baudrate_imcs01;
-
-  for(int i = 0; i < 2; i++) {
+cirkit::ThirdRobotInterface::ThirdRobotInterface(const std::string& new_serial_port_imcs01, int new_baudrate_imcs01)
+: imcs01_port_name {new_serial_port_imcs01},
+  fd_imcs01 {-1},
+  baudrate_imcs01 {new_baudrate_imcs01},
+  steer_angle {0.0},
+  last_rear_encoder_time {0},
+  stasis_ {ROBOT_STASIS_FORWARD_STOP}
+{
+  for (int i = 0; i < 2; i++)
+  {
     delta_rear_encoder_counts[i] = -1;
     last_rear_encoder_counts[i] = 0;
   }
-  steer_angle = 0.0;
-  last_rear_encoder_time = 0;
-  stasis_ = ROBOT_STASIS_FORWARD_STOP;
 
   resetOdometry();
 }
 
-cirkit::ThirdRobotInterface::~ThirdRobotInterface() {
+cirkit::ThirdRobotInterface::~ThirdRobotInterface()
+{
   //  cout << "Destructor called\n" << endl;
   cmd_ccmd.offset[0] = 65535; // iMCs01 CH101 PIN2 is 5[V]. Forwarding flag.
   cmd_ccmd.offset[1] = 32767; // STOP
@@ -47,7 +56,8 @@ cirkit::ThirdRobotInterface::~ThirdRobotInterface() {
   write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd));
 
   //! iMCs01
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0)
+  {
     tcsetattr(fd_imcs01, TCSANOW, &oldtio_imcs01);
     close(fd_imcs01);
   }
@@ -57,10 +67,14 @@ cirkit::ThirdRobotInterface::~ThirdRobotInterface() {
 
 // *****************************************************************************
 // Open the serial port
-int cirkit::ThirdRobotInterface::openSerialPort() {
-  try {
+int cirkit::ThirdRobotInterface::openSerialPort()
+{
+  try
+  {
     setSerialPort();
-  } catch(exception &e) {
+  }
+  catch(exception &e)
+  {
     cerr << e.what() << endl;
     return -1; // kill exception
   }
@@ -69,13 +83,15 @@ int cirkit::ThirdRobotInterface::openSerialPort() {
 
 // *****************************************************************************
 // Set the serial port
-int cirkit::ThirdRobotInterface::setSerialPort() {
+int cirkit::ThirdRobotInterface::setSerialPort()
+{
   // Setting iMCs01
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0)
+  {
     throw logic_error("imcs01 is already open");
   }
   fd_imcs01 = open(imcs01_port_name.c_str(), O_RDWR);
-  if(fd_imcs01 > 0)
+  if (fd_imcs01 > 0)
   {
     tcgetattr(fd_imcs01, &oldtio_imcs01);
   }
@@ -83,7 +99,7 @@ int cirkit::ThirdRobotInterface::setSerialPort() {
   {
     throw logic_error("Faild to open port: imcs01");
   }
-  if(ioctl(fd_imcs01, URBTC_CONTINUOUS_READ) < 0)
+  if (ioctl(fd_imcs01, URBTC_CONTINUOUS_READ) < 0)
   {
     throw logic_error("Faild to ioctl: URBTC_CONTINUOUS_READ");
   }
@@ -102,11 +118,11 @@ int cirkit::ThirdRobotInterface::setSerialPort() {
   cmd_ccmd.breaks     = SET_BREAKS | CH0 | CH1 | CH2 | CH3; //No Brake;
   cmd_ccmd.magicno    = 0x00;
 
-  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0)
+  if (ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0)
   {
     throw logic_error("Faild to ioctl: URBTC_COUNTER_SET");
   }
-  if(write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd)) < 0)
+  if (write(fd_imcs01, &cmd_ccmd, sizeof(cmd_ccmd)) < 0)
   {
     throw logic_error("Faild to write");
   }
@@ -119,7 +135,8 @@ int cirkit::ThirdRobotInterface::setSerialPort() {
 
 // *****************************************************************************
 // Set params
-void cirkit::ThirdRobotInterface::setParams(double pulse_rate, double geer_rate, double wheel_diameter_right, double wheel_diameter_left, double tred_width) {
+void cirkit::ThirdRobotInterface::setParams(double pulse_rate, double geer_rate, double wheel_diameter_right, double wheel_diameter_left, double tred_width)
+{
   //! num of pulse
   PulseRate = pulse_rate;
   ROS_INFO("PulseRate : %lf", PulseRate);
@@ -138,11 +155,13 @@ void cirkit::ThirdRobotInterface::setParams(double pulse_rate, double geer_rate,
 }
 // *****************************************************************************
 // Close the serial port
-int cirkit::ThirdRobotInterface::closeSerialPort() {
+int cirkit::ThirdRobotInterface::closeSerialPort()
+{
   drive(0.0, 0.0);
   usleep(1000);
 
-  if(fd_imcs01 > 0) {
+  if (fd_imcs01 > 0)
+  {
     tcsetattr(fd_imcs01, TCSANOW, &oldtio_imcs01);
     close(fd_imcs01);
     fd_imcs01 = -1;
@@ -161,14 +180,20 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::drive(double linear_speed, dou
   double front_angle_deg = 0;
   double rear_speed_m_s = 0;
 
-  if(-0.005 < linear_speed && linear_speed < 0.005 && fabs(angular_speed) > 0.0) {
+  if (-0.005 < linear_speed && linear_speed < 0.005 && fabs(angular_speed) > 0.0)
+  {
     rear_speed_m_s = 0.3;
-    if(angular_speed > 0) {
+    if (angular_speed > 0)
+    {
       front_angle_deg = 60;
-    } else {
+    }
+    else
+    {
       front_angle_deg = -60;
     }
-  } else {
+  }
+  else
+  {
     rear_speed_m_s = linear_speed*1.0;
     front_angle_deg = angular_speed*1.2*(180.0/M_PI);
     //front_angle_deg = atan((angular_speed*1.1)/linear_speed) * (180.0/M_PI);
@@ -190,7 +215,8 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::drive(double linear_speed, dou
 //     ROBOT_STASIS_BACK_STOP    : Stoping but back mode
 //     ROBOT_STASIS_OTHERWISE    : Braking but not stop.
 
-geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angular, double rear_speed) {
+geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angular, double rear_speed)
+{
   static int forward_stop_cnt = 0;
   static int back_stop_cnt = 0;
   static int max_spped_x = 3.0;
@@ -209,10 +235,11 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
   double duty = 0;
 
   // Forward
-  if(rear_speed >= 0.0) {
+  if (rear_speed >= 0.0)
+  {
     double rear_speed_m_s = MIN(rear_speed, MAX_LIN_VEL); // return smaller
-    if(stasis_ == ROBOT_STASIS_FORWARD
-        || stasis_ == ROBOT_STASIS_FORWARD_STOP) {
+    if (stasis_ == ROBOT_STASIS_FORWARD || stasis_ == ROBOT_STASIS_FORWARD_STOP)
+    {
       // Now Forwarding
       // e = rear_speed_m_s - linear_velocity;
       // u = u1 + (gain_p + gain_i * delta_rear_encoder_time
@@ -223,7 +250,8 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       u = (int)(32767.0 + 32767.0 * average_spped_x *1.0);
       // ROS_INFO("a : %f", average_spped_x);
       // ROS_INFO("u : %f", u);
-      if(rear_speed == 0.0) {
+      if (rear_speed == 0.0)
+      {
         u = 32767;
         average_spped_x = 0;
       }
@@ -239,7 +267,9 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       writeCmd(cmd_ccmd);
 
       stasis_ = ROBOT_STASIS_FORWARD;
-    } else {
+    }
+    else
+    {
       // Now Backing
       // Need to stop once.
       cmd_ccmd.offset[0] = 65535; // iMCs01 CH101 PIN2 is 5[V]. Forwarding flag. 32767
@@ -254,24 +284,30 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
       average_spped_x = 0;
       writeCmd(cmd_ccmd);
 
-      if(forward_stop_cnt >= 20) {
+      if (forward_stop_cnt >= 20)
+      {
         stasis_ = ROBOT_STASIS_FORWARD_STOP;
         forward_stop_cnt = 0;
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i)
+        {
           cmd_ccmd.offset[0] = 65535; // iMCs01 CH101 PIN2 is 5[V]. Forwarding flag. 32767
           cmd_ccmd.offset[1] = 32767; // STOP
           writeCmd(cmd_ccmd);
         }
-      } else {
+      }
+      else
+      {
         stasis_ = ROBOT_STASIS_OTHERWISE;
         forward_stop_cnt++;
       }
     }
-  } else {
+  }
+  else
+  {
     // (rear_speed < 0) -> Back
     average_spped_x = 0;
-    if(stasis_ == ROBOT_STASIS_BACK_STOP
-        || stasis_ == ROBOT_STASIS_BACK) {
+    if (stasis_ == ROBOT_STASIS_BACK_STOP || stasis_ == ROBOT_STASIS_BACK)
+    {
       // Now backing
       cmd_ccmd.offset[0] = 32767; // iMCs01 CH101 PIN2 is 0[V]. Backing flag.
       cmd_ccmd.offset[1] = 60000; // Back is constant speed.
@@ -284,9 +320,12 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
 
       stasis_ = ROBOT_STASIS_BACK;
       ROS_INFO("ROBOT_STASIS_BACK");
-    } else {
+    }
+    else
+    {
       // Now forwarding
-      if(back_stop_cnt >= 10) {
+      if (back_stop_cnt >= 10)
+      {
         stasis_ = ROBOT_STASIS_BACK_STOP;
         back_stop_cnt = 0;
         cmd_ccmd.offset[0] = 32767; // iMCs01 CH101 PIN2 is 0[V].  Backing flag.
@@ -294,7 +333,9 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
         writeCmd(cmd_ccmd);
         for (int i = 0; i < 300; ++i) usleep(1000);
         ROS_INFO("ROBOT_STASIS_BACK_STOP");
-      } else {
+      }
+      else
+      {
         cmd_ccmd.offset[0] = 65535; // iMCs01 CH101 PIN2 is 0[V].  Backing flag.
         cmd_ccmd.offset[1] = 32767; // STOP
         usleep(50000);
@@ -323,23 +364,30 @@ geometry_msgs::Twist cirkit::ThirdRobotInterface::driveDirect(double front_angul
 
 // *****************************************************************************
 // Read the encoders from iMCs01
-int cirkit::ThirdRobotInterface::getEncoderPacket() {
-  if(read(fd_imcs01, &cmd_uin, sizeof(cmd_uin)) != sizeof(cmd_uin)){
+int cirkit::ThirdRobotInterface::getEncoderPacket()
+{
+  std::lock_guard<std::mutex> lck {communication_mutex_};
+  if (read(fd_imcs01, &cmd_uin, sizeof(cmd_uin)) != sizeof(cmd_uin))
+  {
     return -1;
-  } else {
+  }
+  else
+  {
     return parseEncoderPackets();
   }
 }
 
 // *****************************************************************************
 // Parse encoder data
-int cirkit::ThirdRobotInterface::parseEncoderPackets() {
+int cirkit::ThirdRobotInterface::parseEncoderPackets()
+{
   parseFrontEncoderCounts();
   parseRearEncoderCounts();
   return 0;
 }
 
-int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
+int cirkit::ThirdRobotInterface::parseFrontEncoderCounts()
+{
   const int ave_num = 5;
   static int cnt = 0;
   static vector<double> move_ave(ave_num);
@@ -351,9 +399,12 @@ int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
   double R = 0.0;
   const double n = 1.00;
 
-  if(steer_encoder_counts == 0.0) {
+  if (steer_encoder_counts == 0.0)
+  {
     steer_angle = 0.0;
-  } else {
+  }
+  else
+  {
     double tmp = steer_encoder_counts*67.0/3633.0;
     tmp = tmp * M_PI /180;
     R = 0.96/tan(tmp);
@@ -366,7 +417,8 @@ int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
   move_ave[cnt%5] = steer_angle;
   size_t size = move_ave.size();
   double sum = 0;
-  for(unsigned int i = 0; i < size; i++) {
+  for (unsigned int i = 0; i < size; i++)
+  {
     sum += move_ave[i];
   }
   steer_angle = sum / (double)size;
@@ -375,31 +427,39 @@ int cirkit::ThirdRobotInterface::parseFrontEncoderCounts() {
   return 0;
 }
 
-int cirkit::ThirdRobotInterface::parseRearEncoderCounts() {
+int cirkit::ThirdRobotInterface::parseRearEncoderCounts()
+{
   //! 0 is right, 1 is left.
-  int rear_encoder_counts[2] = {(int)(cmd_uin.ct[2]), -(int)(cmd_uin.ct[3])};
+  int rear_encoder_counts[2] {(int)(cmd_uin.ct[2]), -(int)(cmd_uin.ct[3])};
 
   delta_rear_encoder_time = (double)(cmd_uin.time) - last_rear_encoder_time;
-  if(delta_rear_encoder_time < 0) {
+  if (delta_rear_encoder_time < 0)
+  {
     delta_rear_encoder_time = 65535 - (last_rear_encoder_time - cmd_uin.time);
   }
   delta_rear_encoder_time = delta_rear_encoder_time / 1000.0; // [ms] -> [s]
   last_rear_encoder_time = (double)(cmd_uin.time);
 
-  for(int i = 0; i < 2; i++) {
-    if(delta_rear_encoder_counts[i] == -1
-        || rear_encoder_counts[i] == last_rear_encoder_counts[i]) { // First time.
+  for (int i = 0; i < 2; i++)
+  {
+    if (delta_rear_encoder_counts[i] == -1
+        || rear_encoder_counts[i] == last_rear_encoder_counts[i])
+    { // First time.
 
       delta_rear_encoder_counts[i] = 0;
 
-    } else {
+    }
+    else
+    {
       delta_rear_encoder_counts[i] = rear_encoder_counts[i] - last_rear_encoder_counts[i];
 
       // checking imcs01 counter overflow.
-      if(delta_rear_encoder_counts[i] > ROBOT_MAX_ENCODER_COUNTS/10) {
+      if (delta_rear_encoder_counts[i] > ROBOT_MAX_ENCODER_COUNTS/10)
+      {
         delta_rear_encoder_counts[i] = delta_rear_encoder_counts[i] - ROBOT_MAX_ENCODER_COUNTS;
       }
-      if(delta_rear_encoder_counts[i] < -ROBOT_MAX_ENCODER_COUNTS/10) {
+      if (delta_rear_encoder_counts[i] < -ROBOT_MAX_ENCODER_COUNTS/10)
+      {
         delta_rear_encoder_counts[i] = delta_rear_encoder_counts[i] + ROBOT_MAX_ENCODER_COUNTS;
       }
     }
@@ -412,13 +472,15 @@ int cirkit::ThirdRobotInterface::parseRearEncoderCounts() {
 
 // *****************************************************************************
 // Reset Third Robot odometry
-void cirkit::ThirdRobotInterface::resetOdometry() {
+void cirkit::ThirdRobotInterface::resetOdometry()
+{
   setOdometry(0.0, 0.0, 0.0);
 }
 
 // *****************************************************************************
 // Set Third Robot odometry
-void cirkit::ThirdRobotInterface::setOdometry(double new_x, double new_y, double new_yaw) {
+void cirkit::ThirdRobotInterface::setOdometry(double new_x, double new_y, double new_yaw)
+{
   odometry_x_   = new_x;
   odometry_y_   = new_y;
   odometry_yaw_ = new_yaw;
@@ -427,9 +489,11 @@ void cirkit::ThirdRobotInterface::setOdometry(double new_x, double new_y, double
 
 // *****************************************************************************
 // Calculate Third Robot odometry
-void cirkit::ThirdRobotInterface::calculateOdometry() {
+void cirkit::ThirdRobotInterface::calculateOdometry()
+{
   // Pulse to distance
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++)
+  {
     delta_dist[i] = (delta_rear_encoder_counts[i]/PulseRate/GeerRate)*(WheelDiameter[i]*M_PI);
   }
 
@@ -447,45 +511,62 @@ void cirkit::ThirdRobotInterface::calculateOdometry() {
   odometry_y_ += (((last_delta_dist[0] + last_delta_dist[1]) * sin(last_odometry_yaw) +
       (delta_dist[0] + delta_dist[1]) * sin(odometry_yaw_)) / 4.0);
 
-  for(int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++)
+  {
     last_delta_dist[i] = delta_dist[i];
   }
   last_odometry_yaw = odometry_yaw_;
 }
 
 
-void cirkit::ThirdRobotInterface::writeCmd(ccmd cmd) {
-  if(ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) {
+void cirkit::ThirdRobotInterface::writeCmd(ccmd cmd)
+{
+  if (ioctl(fd_imcs01, URBTC_COUNTER_SET) < 0) // FIXME: setup URBTC_COUNTER_SET on every communicate, realry? It wrong!
+  {
     ROS_WARN("URBTC_COUNTER_SET fail."); // error // FIXME: error? if error, you should not write, right?
   }
-  if(write(fd_imcs01, &cmd, sizeof(cmd)) < 0) {
+  std::lock_guard<std::mutex> lck {communication_mutex_};
+  if (write(fd_imcs01, &cmd, sizeof(cmd)) < 0)
+  {
     ROS_WARN("iMCs01 write fail.");
   }
 }
 
-geometry_msgs::Twist cirkit::ThirdRobotInterface::fixFrontAngle(double angular_diff) {
+geometry_msgs::Twist cirkit::ThirdRobotInterface::fixFrontAngle(double angular_diff)
+{
   geometry_msgs::Twist ret_steer;
-  if(angular_diff > 0) {
+  if (angular_diff > 0)
+  {
     ret_steer.angular.z = 1;
     ret_steer.angular.x = fabs(angular_diff);
     return ret_steer;
-  } else if(angular_diff < 0) {
+  }
+  else if(angular_diff < 0)
+  {
     ret_steer.angular.z = -1;
     ret_steer.angular.x = fabs(angular_diff);
     return ret_steer;
-  } else {
+  }
+  else
+  {
     ret_steer.angular.z = 0;
     ret_steer.angular.x = 0;
     return ret_steer;
   }
 }
 
-int plus_or_minus(double value) {
-  if(value > 0) {
+int plus_or_minus(double value)
+{
+  if (value > 0)
+  {
     return 1;
-  } else if(value < 0) {
+  }
+  else if(value < 0)
+  {
     return -1;
-  } else {
+  }
+  else
+  {
     return 0;
   }
 }

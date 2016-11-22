@@ -1,4 +1,6 @@
 /**
+The original code:
+
 Copyright (c) 2015, Yusuke Doi
 All rights reserved.
 
@@ -29,27 +31,23 @@ either expressed or implied, of the FreeBSD Project.
 #include <ros.h> // Use ros_lib.
 #include <geometry_msgs/Twist.h> // Use Twist.msg. -> [linear(x,y,z), angular(x,y,z)]
 
-/* Define pin numbers. */
-#define ACCEL 9
-#define BACK_GEAR 8
-#define CW 3
-#define CCW 4
 /* Define pulse width time of the stepping motor. */
 #define PULSE_WIDTH_MICRO_SECOND 500
-/* Define max speed to 220. */
-#define MAX_SPEED 220
-/* Define direction of angular z. */
-#define LEFT 0
-#define RIGHT 1
-#define KEEP 2
-/* Define direction of back gear. */
-#define FORWARD 0
-#define BACK 1
 
-const int cw_plus = 3;
-const int cw_minus = 4;
-const int ccw_plus = 5;
-const int ccw_minus = 6;
+enum
+{
+  LEFT,
+  RIGHT,
+  KEEP
+};
+
+enum
+{
+  cw_plus = 3,
+  cw_minus,
+  ccw_plus,
+  ccw_minus
+};
 
 /* Declare proto type functions. */
 void gen_pulse(const char direction, double time); // Write pulse to the stepping motor.
@@ -61,18 +59,21 @@ const unsigned int PULSE_FREQUENCY = 1000l * 1000 / (PULSE_WIDTH_MICRO_SECOND * 
 ros::NodeHandle nh; // The nodeHandle.
 ros::Subscriber<geometry_msgs::Twist> sub("steer_ctrl", &steerCb); // Set subscribe the motor_driver topic.
 
-void setup() {
+void setup()
+{
   /* Set pins Mode. */
-  for (int i = cw_plus; i < ccw_minus + 1; i++) { // 3: CW+, 4: CW-, 5: CCW+, 6:CCW-
-      pinMode(i, OUTPUT);
-      digitalWrite(i, LOW); // Default pin status is LOW.
+  for (int i = cw_plus; i < ccw_minus + 1; i++)
+  { // 3: CW+, 4: CW-, 5: CCW+, 6:CCW-
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW); // Default pin status is LOW.
   }
   /* Node handle setting. */
   nh.initNode(); // First setup the node handle.
   nh.subscribe(sub); // Start subscribe the "steer_ctrl" topic.
 }
 
-void loop() {
+void loop()
+{
   nh.spinOnce(); // Check topic and if change it, run the call back function.
 }
 
@@ -83,12 +84,12 @@ void loop() {
  * @author "Yusuke Doi"
  * @param msg This param is msg object of the motor_driver topic.
  */
-void steerCb(const geometry_msgs::Twist& msg) {
+void steerCb(const geometry_msgs::Twist& msg)
+{
   int time = msg.angular.x * 10;
   if (msg.angular.z < 0 && time > 50) gen_pluse(LEFT, time); // Minus mean CCW or right.
   else if (msg.angular.z > 0 && time > 50) gen_pluse(RIGHT, time); // Plus mean CW or left.
   else gen_pluse(KEEP, 0); // Zero mean keep steer.
-   /* move task */
 }
 
 /**
@@ -97,20 +98,21 @@ void steerCb(const geometry_msgs::Twist& msg) {
  * @author "Yusuke Doi"
  * @param direction Steer to direction.
  */
-void gen_pluse(const char direction, double time) {
-  switch (direction) {
+void gen_pluse(const char direction, double time)
+{
+  switch (direction)
+  {
   case LEFT: // Task steer left.
-      noTone(cw_plus); // Unset tone. If don't running tone, not happen.
-      tone(ccw_plus, PULSE_FREQUENCY, time); // Write pulse to CCW pin. turn to CW.
-      break;
+    noTone(cw_plus); // Unset tone. If don't running tone, not happen.
+    tone(ccw_plus, PULSE_FREQUENCY, time); // Write pulse to CCW pin. turn to CW.
+    break;
   case RIGHT: // Task steer right.
-      noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
-      tone(cw_plus, PULSE_FREQUENCY, time); // Write pulse to CW pin. turn to CCW.
-      break;
+    noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
+    tone(cw_plus, PULSE_FREQUENCY, time); // Write pulse to CW pin. turn to CCW.
+    break;
   case KEEP: default: // set CW and CCW to low.
-      noTone(cw_plus); // Unset tone. If don't running tone, not happen.
-      noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
-      break;
+    noTone(cw_plus); // Unset tone. If don't running tone, not happen.
+    noTone(ccw_plus); // Unset tone. If don't running tone, not happen.
+    break;
   }
 }
-

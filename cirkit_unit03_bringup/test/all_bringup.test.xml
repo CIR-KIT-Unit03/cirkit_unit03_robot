@@ -1,3 +1,0 @@
-<launch>
-  <include file="$(find cirkit_unit03_bringup)/launch/all_bringup.launch" />
-</launch>

@@ -1,3 +1,0 @@
-<launch>
-  <include file="$(find cirkit_unit03_driver)/launch/cirkit_unit03.launch" />
-</launch>

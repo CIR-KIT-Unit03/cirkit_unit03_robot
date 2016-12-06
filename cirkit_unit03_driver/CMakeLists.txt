@@ -38,4 +38,4 @@ add_executable(cirkit_unit03_driver_node
 add_dependencies(cirkit_unit03_driver_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(cirkit_unit03_driver_node ${catkin_LIBRARIES})
 
-roslaunch_add_file_check(test/cirkit_unit03.test.xml)
+roslaunch_add_file_check(test/cirkit_unit03_driver.test.xml)

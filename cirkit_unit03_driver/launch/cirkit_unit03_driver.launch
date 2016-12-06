@@ -1,4 +1,7 @@
 <launch>
+
+  <arg name="arduino_port" default="/dev/arduino_uno_95233353131351D040D0"/>
+  
   <node name="cirkit_unit03_driver_node" pkg="cirkit_unit03_driver" type="cirkit_unit03_driver_node">
     <param name="imcs01_port" type="string" value="/dev/urbtc0" />
     <param name="pulse_rate" type="double" value="45.0" />
@@ -9,6 +12,6 @@
   </node>
   
   <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">
-    <param name="port" value="/dev/arduino_uno_95233353131351D040D0" />
+    <param name="port" value="$(arg arduino_port)" />
   </node>
 </launch>

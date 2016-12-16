@@ -1,19 +1,25 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
+#include <geometry_msgs/Twist.h>
 
 #include <controller_manager/controller_manager.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
 
+#include "ixis_imcs01_driver/ixis_imcs01_driver.h"
+
 class CirkitUnit03HardwareInterface
   : public hardware_interface::RobotHW
 {
 public:
   CirkitUnit03HardwareInterface(const std::string& imcs01_port, const ros::NodeHandle& nh);
+  ros::Time getTime() const { return ros::Time::now(); }
+  ros::Duration getPeriod() const {return ros::Duration(0.01); }
   void read();
   void write();
 protected:
+  void publishSteer(double angle_cmd);
   ros::NodeHandle nh_;
 
   hardware_interface::JointStateInterface front_steer_jnt_state_interface_;
@@ -31,10 +37,12 @@ protected:
   double rear_wheel_vel_cmd_;
 
   ros::Publisher steer_cmd_publisher_;
+  IxisImcs01Driver ixis_imcs01_driver_;
 };
 
 CirkitUnit03HardwareInterface::CirkitUnit03HardwareInterface(const std::string& imcs01_port, const ros::NodeHandle& nh)
   : nh_(nh),
+    ixis_imcs01_driver_(imcs01_port),
     steer_cmd_publisher_(nh_.advertise<geometry_msgs::Twist>("/steer_ctrl", 1))
 {
   ros::NodeHandle n("~");
@@ -54,14 +62,37 @@ CirkitUnit03HardwareInterface::CirkitUnit03HardwareInterface(const std::string& 
 
 void CirkitUnit03HardwareInterface::read()
 {
-  
+  ixis_imcs01_driver_.update(); // reading from imcs01.
+  sensor_msgs::JointState joints_state = ixis_imcs01_driver_.getJointState();
+  front_steer_pos_ = joints_state.position[JOINT_INDEX_FRONT];
+  rear_wheel_pos_ = (joints_state.position[JOINT_INDEX_REAR_RIGHT]
+                     + joints_state.position[JOINT_INDEX_REAR_LEFT]) / 2.0;
+  rear_wheel_vel_ = (joints_state.velocity[JOINT_INDEX_REAR_RIGHT]
+                     + joints_state.velocity[JOINT_INDEX_REAR_LEFT]) / 2.0;
 }
 
 void CirkitUnit03HardwareInterface::write()
 {
-  
+  ixis_imcs01_driver_.controlRearWheel(rear_wheel_vel_cmd_);
+  this->publishSteer(front_steer_pos_cmd_);
 }
 
+void CirkitUnit03HardwareInterface::publishSteer(double angle_cmd)
+{
+  geometry_msgs::Twist steer;
+  double angle_diff = angle_cmd - front_steer_pos_; // TODO: check unit, rad or deg.
+  if(angle_diff > 0){
+    steer.angular.z = 1;
+    steer.angular.x = fabs(angle_diff);
+  }else if(angle_diff < 0){
+    steer.angular.z = -1;
+    steer.angular.x = fabs(angle_diff);
+  }else{
+    steer.angular.z = 0;
+    steer.angular.x = 0;
+  }
+  steer_cmd_publisher_.publish(steer);
+}
 
 int main(int argc, char** argv)
 {
@@ -72,7 +103,7 @@ int main(int argc, char** argv)
   CirkitUnit03HardwareInterface cirkit_unit03_hardware_interface(imcs01_port, nh);
   controller_manager::ControllerManager cm(&cirkit_unit03_hardware_interface, nh);
 
-  ros::Rate rate(1.0 / cirkit_unit03_hardware.getPeriod().toSec());
+  ros::Rate rate(1.0 / cirkit_unit03_hardware_interface.getPeriod().toSec());
   ros::AsyncSpinner spinner(1);
   spinner.start();
 

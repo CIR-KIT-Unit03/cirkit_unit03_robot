@@ -6,8 +6,35 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
 
-enum RunningState {
+#include <termios.h>
+#include "urbtc.h"
+#include "urobotc.h"
+
+#define JOINT_INDEX_REAR_RIGHT 0
+#define JOINT_INDEX_REAR_LEFT 1
+#define JOINT_INDEX_FRONT 2
+
+template<typename N, typename M>
+inline double MIN(const N& a, const M& b)
+{
+  return a < b ? a : b;
+}
+
+template<typename N, typename M>
+inline double MAX(const N& a, const M& b)
+{
+  return a > b ? a : b;
+}
+
+template<typename T>
+inline double NORMALIZE(const T& z)
+{
+  return atan2(sin(z), cos(z));
+}
+
+enum class RunningState {
     FORWARD,
     FORWARD_STOP,
     BACK,
@@ -16,21 +43,24 @@ enum RunningState {
 };
 
 // RunningMode means switch of Handle of car.
-enum RunningMode {
+enum class RunningMode {
   FORWARD,
   BACK
 };
+
 
 class IxisImcs01Driver
 {
 public:
   IxisImcs01Driver(std::string port_name);
+  ~IxisImcs01Driver();
   int update();
   sensor_msgs::JointState getJointState();
   int controlRearWheel(double rear_speed);
 protected:
   int openPort(std::string port_name);
   int closePort();
+  int setImcs01();
   int parseEncoderTime();
   int parseFrontEncoderCounts();
   int parseRearEncoderCounts();
@@ -46,6 +76,9 @@ protected:
   RunningState running_state_;
   struct ccmd cmd_ccmd_;
   struct uin cmd_uin_;
+  termios oldtio_imcs01_;
+  termios newtio_imcs01_;
+  std::mutex communication_mutex_;
 };
 
 #endif /* IXIS_IMCS01_DRIVER_H */

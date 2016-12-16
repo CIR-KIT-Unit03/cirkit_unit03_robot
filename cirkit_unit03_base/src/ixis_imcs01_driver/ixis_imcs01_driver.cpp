@@ -130,7 +130,107 @@ int IxisImcs01Driver::parseRearEncoderCounts()
   return 0;
 }
 
-sensor_msgs::JointState getJointState()
+sensor_msgs::JointState IxisImcs01Driver::getJointState()
 {
   return state_;
+}
+
+int IxisImcs01Driver::controlRearWheel(double rear_speed)
+{
+  static int forward_stop_cnt = 0;
+  static int back_stop_cnt = 0;
+  static int max_spped_x = 3.0;
+  static double average_spped_x = 0;
+
+  unsigned short duty = 0;
+
+  // Forward
+  if (rear_speed >= 0.0){
+    double rear_speed_m_s = MIN(rear_speed, MAX_LIN_VEL); // return smaller
+    if (running_state_ == RunningState::FORWARD
+        || running_state_ == RunningState::FORWARD_STOP){
+      // Now Forwarding
+      average_spped_x = (average_spped_x + rear_speed)/2.0;
+      u = (unsigned short)(32767.0 + 32767.0 * average_spped_x *1.0);
+      if (rear_speed == 0.0){
+        u = 32767;
+        average_spped_x = 0;
+      }
+      duty = MIN(u, 60000);
+      duty = MAX(duty, 32767);
+      this->writeOffsetCmd(RunningMode::FORWARD, duty);
+      running_state_ = RunningState::FORWARD;
+    }else{
+      // Now Backing
+      // Need to stop once.
+      duty = 32767; // STOP
+      this->writeOffsetCmd(RunningMode::FORWARD, duty);
+      average_spped_x = 0;
+
+      if (forward_stop_cnt >= 20){
+        running_state_ = RunningState::FORWARD_STOP;
+        forward_stop_cnt = 0;
+        for (int i = 0; i < 10; ++i){
+          duty = 32767;
+          this->writeOffsetCmd(RunningMode::FORWARD, duty);
+        }
+      }else{
+        running_state_ = RunningState::OTHERWISE;
+        forward_stop_cnt++;
+      }
+    }
+  }else{
+    // (rear_speed < 0) -> Back
+    average_spped_x = 0;
+    if (running_state_ == RunningState::BACK_STOP ||
+        running_state_ == RunningState::BACK){
+      // Now backing
+      duty = 60000; // Back is constant speed
+      this->writeOffsetCmd(RunningMode::Back, duty);
+      running_state_ = RunningState::BACK;
+      ROS_INFO("ROBOT_STASIS_BACK");
+    }else{
+      // Now forwarding
+      if (back_stop_cnt >= 10){
+        running_state_ = RunningState::BACK_STOP;
+        back_stop_cnt = 0;
+        duty = 32767; // STOP
+        this->writeOffsetCmd(RunningMode::Back, duty);
+        for (int i = 0; i < 300; ++i){ usleep(1000); }
+        ROS_INFO("ROBOT_STASIS_BACK_STOP");
+      }else{
+        usleep(50000);
+        duty = 32767; // STOP
+        this->writeOffsetCmd(RunningMode::FORWARD, duty);
+        running_state_ = RunningState::OTHERWISE;
+        back_stop_cnt++;
+        ROS_INFO("ROBOT_STASIS_OTHERWISE");
+      }
+    }
+  }
+}
+
+int IxisImcs01Driver::writeOffsetCmd(RunningMode mode,
+                                     unsigned short duty)
+{
+  switch (mode) {
+    case RunningMode::FORWARD : {
+      cmd_ccmd_.offset[0] = 65535;
+      break;
+    }
+    case RunningMode::BACK : {
+      cmd_ccmd__.offset[1] = 32767;
+      break
+    }
+    default:
+      break;
+  }
+  cmd_ccmd_.offset[1] = duty;
+  std::lock_guard<std::mutex> lck {communication_mutex_};
+  if (write(fd_imcs01, &cmd, sizeof(cmd)) < 0){
+    ROS_ERROR_STREAM("iMCs01 write fail.");
+    return -1;
+  }else{
+    return 0;
+  }
 }

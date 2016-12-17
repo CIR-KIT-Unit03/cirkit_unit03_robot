@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   hardware_interface
   controller_manager
+  roslaunch
 )
 
 ## System dependencies are found with CMake's conventions

@@ -12,10 +12,11 @@
 
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
-  <depend>sensor_msgs</depend>
+  <depend>controller_manager</depend>
   <depend>geometry_msgs</depend>
   <depend>hardware_interface</depend>
-  <depend>controller_manager</depend>
+  <depend>roscpp</depend>
+  <depend>rosserial_python</depend>
+  <depend>sensor_msgs</depend>
 
 </package>

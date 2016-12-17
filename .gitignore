@@ -42,6 +42,7 @@ qtcreator-*
 
 # Emacs
 .#*
+
 # vim
 .*.sw[a-z]
 *.un~

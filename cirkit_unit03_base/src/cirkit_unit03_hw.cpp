@@ -85,8 +85,11 @@ void CirkitUnit03HardwareInterface::write()
 
 void CirkitUnit03HardwareInterface::publishSteer(double angle_cmd)
 {
+  double limited_angle = angle_cmd * 180.0 / M_PI;
+  limited_angle = MAX(limited_angle, -60.0);
+  limited_angle = MIN(limited_angle, 60);
   geometry_msgs::Twist steer;
-  double angle_diff = angle_cmd - front_steer_pos_; // TODO: check unit, rad or deg.
+  double angle_diff = limited_angle - (front_steer_pos_*180.0/M_PI); // angle_diff assume [deg]
   if(angle_diff > 0){
     steer.angular.z = 1;
     steer.angular.x = fabs(angle_diff);

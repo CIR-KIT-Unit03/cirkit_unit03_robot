@@ -44,7 +44,7 @@ int IxisImcs01Driver::openPort(std::string port_name)
   imcs01_fd_ = open(port_name.c_str(), O_RDWR);
   if(imcs01_fd_ < 0){
     ROS_ERROR_STREAM("iMCs01 Open Error : " << port_name);
-    exit(-1);
+    //exit(-1);
   }else{
     this->setImcs01();
   }
@@ -70,11 +70,11 @@ int IxisImcs01Driver::setImcs01()
   tcgetattr(imcs01_fd_, &oldtio_imcs01_);
   if(ioctl(imcs01_fd_, URBTC_CONTINUOUS_READ) < 0){
     ROS_ERROR_STREAM("iMCs01 ioctl URBTC_CONTINUOUS_READ error");
-    exit(-1);
+    //exit(-1);
   }
   if(ioctl(imcs01_fd_, URBTC_BUFREAD) < 0){
     ROS_ERROR_STREAM("iMCs01 ioctl URBTC_BUFREAD error");
-    exit(-1);
+    //exit(-1);
   }
 
   cmd_ccmd_.selout     = SET_SELECT | CH0 | CH1 | CH2 | CH3; // All PWM.
@@ -93,7 +93,7 @@ int IxisImcs01Driver::setImcs01()
 
   if (ioctl(imcs01_fd_, URBTC_COUNTER_SET) < 0){
     ROS_ERROR_STREAM("Faild to ioctl: URBTC_COUNTER_SET");
-    exit(-1);
+    //exit(-1);
   }
   if (write(imcs01_fd_, &cmd_ccmd_, sizeof(cmd_ccmd_)) < 0){
     ROS_ERROR_STREAM("Faild to ioctl: Faild to write");
@@ -108,7 +108,7 @@ int IxisImcs01Driver::update()
 {
   if(read(imcs01_fd_, &received_data_, sizeof(received_data_))
      != sizeof(received_data_)){
-    ROS_WARN_STREAM("iMCs01 update() read error");
+    //ROS_WARN_STREAM("iMCs01 update() read error");
     return -1;
   }else{
     this->parseEncoderTime();
@@ -269,7 +269,7 @@ int IxisImcs01Driver::writeOffsetCmd(RunningMode mode,
   cmd_ccmd_.offset[1] = duty;
   std::lock_guard<std::mutex> lck {communication_mutex_};
   if (write(imcs01_fd_, &cmd_ccmd_, sizeof(cmd_ccmd_)) < 0){
-    ROS_ERROR_STREAM("iMCs01 write fail.");
+    //ROS_ERROR_STREAM("iMCs01 write fail.");
     return -1;
   }else{
     return 0;

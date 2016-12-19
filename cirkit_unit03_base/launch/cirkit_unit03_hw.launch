@@ -1,7 +1,7 @@
 <launch>
   <arg name="arduino_port" default="/dev/arduino_uno_95233353131351D040D0"/>
 
-  <node name="cirkit_unit03_hw" pkg="cirkit_unit03_base" type="cirkit_unit03_hw" output="screen" >
+  <node name="cirkit_unit03_hw" pkg="cirkit_unit03_base" type="cirkit_unit03_hw" >
   </node>
   
   <node name="rossrial_python" pkg="rosserial_python" type="serial_node.py" output="screen">

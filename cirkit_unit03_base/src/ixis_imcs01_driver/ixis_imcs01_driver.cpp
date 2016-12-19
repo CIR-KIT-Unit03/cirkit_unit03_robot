@@ -184,24 +184,31 @@ int IxisImcs01Driver::controlRearWheel(double rear_speed)
   static int max_spped_x = 3.0;
   static double average_spped_x = 0;
   static double u = 32767.0;
-  unsigned short duty = 0;
+  double duty = 0;
+
+  if (0.0 <= rear_speed && rear_speed <= 0.05){
+    u = 32767.0;
+    average_spped_x = 0;
+    this->writeOffsetCmd(RunningMode::FORWARD, (unsigned short)u);
+    running_state_ = RunningState::FORWARD_STOP;
+    return 0;
+  }
 
   // Forward
   if (rear_speed >= 0.0){
     double rear_speed_m_s = MIN(rear_speed, MAX_LIN_VEL); // return smaller
-    if (running_state_ == RunningState::FORWARD
-        || running_state_ == RunningState::FORWARD_STOP){
+    if ((running_state_ == RunningState::FORWARD
+         || running_state_ == RunningState::FORWARD_STOP) &&
+        (state_.velocity[JOINT_INDEX_REAR_LEFT] >= 0
+         || state_.velocity[JOINT_INDEX_REAR_RIGHT] >= 0)){
       // Now Forwarding
       average_spped_x = (average_spped_x + rear_speed)/2.0;
-      u = (unsigned short)(32767.0 + 32767.0 * average_spped_x *1.0);
-      if (rear_speed == 0.0){
-        u = 32767;
-        average_spped_x = 0;
-      }
+      u = 32767.0 + 32767.0 * average_spped_x *1.0;
       duty = MIN(u, 60000);
       duty = MAX(duty, 32767);
-      this->writeOffsetCmd(RunningMode::FORWARD, duty);
+      this->writeOffsetCmd(RunningMode::FORWARD, (unsigned short)duty);
       running_state_ = RunningState::FORWARD;
+      //ROS_INFO("ROBOT_STASIS_FORWARD");
     }else{
       // Now Backing
       // Need to stop once.
@@ -209,16 +216,18 @@ int IxisImcs01Driver::controlRearWheel(double rear_speed)
       this->writeOffsetCmd(RunningMode::FORWARD, duty);
       average_spped_x = 0;
 
-      if (forward_stop_cnt >= 20){
+      if ((state_.velocity[JOINT_INDEX_REAR_LEFT] == 0.0
+           && state_.velocity[JOINT_INDEX_REAR_RIGHT] == 0.0 )){
         running_state_ = RunningState::FORWARD_STOP;
         forward_stop_cnt = 0;
-        for (int i = 0; i < 10; ++i){
-          duty = 32767;
-          this->writeOffsetCmd(RunningMode::FORWARD, duty);
-        }
+        duty = 32767;
+        this->writeOffsetCmd(RunningMode::FORWARD, duty);
+        for (int i = 0; i < 300; ++i){ usleep(1000); }
+        //ROS_INFO("ROBOT_STASIS_FORWARD_STOP");
       }else{
         running_state_ = RunningState::OTHERWISE;
         forward_stop_cnt++;
+        //ROS_INFO("ROBOT_STASIS_OTHERWISE");
       }
     }
   }else{
@@ -230,7 +239,7 @@ int IxisImcs01Driver::controlRearWheel(double rear_speed)
       duty = 60000; // Back is constant speed
       this->writeOffsetCmd(RunningMode::BACK, duty);
       running_state_ = RunningState::BACK;
-      ROS_INFO("ROBOT_STASIS_BACK");
+      //ROS_INFO("ROBOT_STASIS_BACK");
     }else{
       // Now forwarding
       if (back_stop_cnt >= 10){
@@ -239,14 +248,14 @@ int IxisImcs01Driver::controlRearWheel(double rear_speed)
         duty = 32767; // STOP
         this->writeOffsetCmd(RunningMode::BACK, duty);
         for (int i = 0; i < 300; ++i){ usleep(1000); }
-        ROS_INFO("ROBOT_STASIS_BACK_STOP");
+        //ROS_INFO("ROBOT_STASIS_BACK_STOP");
       }else{
         usleep(50000);
         duty = 32767; // STOP
         this->writeOffsetCmd(RunningMode::FORWARD, duty);
         running_state_ = RunningState::OTHERWISE;
         back_stop_cnt++;
-        ROS_INFO("ROBOT_STASIS_OTHERWISE");
+        //ROS_INFO("ROBOT_STASIS_OTHERWISE");
       }
     }
   }
@@ -257,17 +266,22 @@ int IxisImcs01Driver::writeOffsetCmd(RunningMode mode,
 {
   switch (mode) {
     case RunningMode::FORWARD : {
+      //ROS_INFO_STREAM("RunningMode::FORWARD");
       cmd_ccmd_.offset[0] = 65535;
+      //cmd_ccmd_.offset[0] = 32767;
       break;
     }
     case RunningMode::BACK : {
-      cmd_ccmd_.offset[1] = 32767;
+      //ROS_INFO_STREAM("RunningMode::BACK");
+      cmd_ccmd_.offset[0] = 32767;
+      //cmd_ccmd_.offset[1] = 65535;
       break;
     }
     default:
       break;
   }
   cmd_ccmd_.offset[1] = duty;
+  //ROS_INFO_STREAM("duty : " << duty);
   std::lock_guard<std::mutex> lck {communication_mutex_};
   if (write(imcs01_fd_, &cmd_ccmd_, sizeof(cmd_ccmd_)) < 0){
     ROS_ERROR_STREAM("iMCs01 write fail.");

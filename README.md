@@ -1,5 +1,10 @@
 # cirkit_unit03_robot [![Build Status](https://travis-ci.org/CIR-KIT-Unit03/cirkit_unit03_robot.svg?branch)](https://travis-ci.org/CIR-KIT-Unit03/cirkit_unit03_robot) [![Slack](https://img.shields.io/badge/Slack-CIR--KIT-blue.svg)](http://cir-kit.slack.com/messages/unit03_robot)
-Robot packages for CIR-KIT-Unit03
+
+## Summary
+Robot packages for CIR-KIT-Unit03, for operating robot hardware.
+
+- husky_bringup : Bringup launch files and scripts.
+- husky_base : Hardware driver for communicating with the onboard MCU.
 
 ## Installation
 #### **!! CAUTION !!  DO NOT INSTALL** this repository **ALONE**.  

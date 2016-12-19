@@ -12,6 +12,7 @@
   <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>cirkit_unit03_base</exec_depend>
   <exec_depend>cirkit_unit03_control</exec_depend>
   <exec_depend>cirkit_unit03_driver</exec_depend>
   <exec_depend>cirkit_unit03_description</exec_depend>

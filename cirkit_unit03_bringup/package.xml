@@ -12,12 +12,13 @@
   <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>cirkit_unit03_control</exec_depend>
   <exec_depend>cirkit_unit03_driver</exec_depend>
   <exec_depend>cirkit_unit03_description</exec_depend>
   <exec_depend>hokuyo_node</exec_depend>
   <exec_depend>hokuyo3d</exec_depend>
-  <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
   <export>
   </export>
 </package>

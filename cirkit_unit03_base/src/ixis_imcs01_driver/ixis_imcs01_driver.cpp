@@ -106,6 +106,7 @@ int IxisImcs01Driver::setImcs01()
 
 int IxisImcs01Driver::update()
 {
+  std::lock_guard<std::mutex> lck {communication_mutex_};
   if(read(imcs01_fd_, &received_data_, sizeof(received_data_))
      != sizeof(received_data_)){
     //ROS_WARN_STREAM("iMCs01 update() read error");

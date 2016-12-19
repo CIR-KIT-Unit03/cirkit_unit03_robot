@@ -18,5 +18,4 @@
   <depend>roscpp</depend>
   <depend>rosserial_python</depend>
   <depend>sensor_msgs</depend>
-
 </package>

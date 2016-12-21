@@ -6,20 +6,17 @@
 
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
   <maintainer email="o111027y@mail.kyutech.jp">Doi Yusuke</maintainer>
+  <maintainer email="p595201m@mail.kyutech.jp">Masaru Morita</maintainer>
+  <maintainer email="k104073r@mail.kyutech.jp">Ryodo Tanaka</maintainer>
   <license>BSD</license>
   <url type="repository">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot.git</url>
   <url type="bugtracker">https://github.com/CIR-KIT-Unit03/cirkit_unit03_robot/issues</url>
   <author email="cirkit.infomation@gmail.com">CIR-KIT</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <exec_depend>cirkit_unit03_base</exec_depend>
-  <exec_depend>cirkit_unit03_control</exec_depend>
-  <exec_depend>cirkit_unit03_driver</exec_depend>
-  <exec_depend>cirkit_unit03_description</exec_depend>
   <exec_depend>hokuyo_node</exec_depend>
   <exec_depend>hokuyo3d</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <export>
-  </export>
+  <exec_depend>roslaunch</exec_depend>
 </package>

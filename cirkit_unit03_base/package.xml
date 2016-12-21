@@ -16,6 +16,7 @@
   <depend>geometry_msgs</depend>
   <depend>hardware_interface</depend>
   <depend>roscpp</depend>
+  <depend>roslaunch</depend>
   <depend>rosserial_python</depend>
   <depend>sensor_msgs</depend>
 </package>

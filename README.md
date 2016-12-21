@@ -3,6 +3,8 @@
 ## Summary
 Robot packages for CIR-KIT-Unit03, for operating robot hardware.
 
+For CIR-KIT-Unit03 instructions and tutorials, please see http://wiki.ros.org/Robots/CIR-KIT-Unit03.
+
 - husky_bringup : Bringup launch files and scripts.
 - husky_base : Hardware driver for communicating with the onboard MCU.
 

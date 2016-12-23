@@ -30,7 +30,7 @@ protected:
   void registerVirtualJointState(std::vector<double> virtual_wheels_pos_,
                                  std::vector<double> virtual_wheels_vel_,
                                  std::vector<double> virtual_wheels_eff_,
-                                 std::vector<string> virtual_wheels_names)
+                                 std::vector<std::string> virtual_wheels_names);
   ros::NodeHandle nh_;
   //hardware_interface::JointStateInterface front_steer_jnt_state_interface_;
   hardware_interface::PositionJointInterface front_steer_jnt_pos_cmd_interface_;
@@ -97,7 +97,7 @@ CirkitUnit03HardwareInterface::CirkitUnit03HardwareInterface(const std::string& 
 void CirkitUnit03HardwareInterface::registerVirtualJointState(std::vector<double> virtual_wheels_pos_,
                                                               std::vector<double> virtual_wheels_vel_,
                                                               std::vector<double> virtual_wheels_eff_,
-                                                              std::vector<string> virtual_wheels_names)
+                                                              std::vector<std::string> virtual_wheels_names)
 {
  for (int i = 0; i < 6; ++i) {
    hardware_interface::JointStateHandle state_handle(virtual_wheels_names[i], &virtual_wheels_pos_[i], &virtual_wheels_vel_[i], &virtual_wheels_eff_[i]);

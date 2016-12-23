@@ -16,7 +16,7 @@
   <depend>geometry_msgs</depend>
   <depend>hardware_interface</depend>
   <depend>roscpp</depend>
+  <depend>roslaunch</depend>
   <depend>rosserial_python</depend>
   <depend>sensor_msgs</depend>
-  <!--<exec_depend>roslaunch</exec_depend>--> <!-- this is for launch test -->
 </package>

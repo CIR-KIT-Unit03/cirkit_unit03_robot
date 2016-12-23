@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   hardware_interface
   controller_manager
-  #  roslaunch # this is for launch test
+  roslaunch
 )
 
 ## System dependencies are found with CMake's conventions
@@ -46,5 +46,4 @@ target_link_libraries(cirkit_unit03_hw
   ${catkin_LIBRARIES}
 )
 
-# this is for launch test
-#roslaunch_add_file_check(test/cirkit_unit03_hw.test.xml)
+roslaunch_add_file_check(test/cirkit_unit03_hw.test.xml)

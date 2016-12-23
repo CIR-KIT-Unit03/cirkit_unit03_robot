@@ -7,9 +7,7 @@
   <maintainer email="k104009y@mail.kyutech.jp">Arita Yuta</maintainer>
 
   <license>BSD</license>
-
   <author email="cirkit.information@gmail.com">CIR-KIT</author>
-
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>controller_manager</depend>
